@@ -8,6 +8,21 @@ IM_WIDTH = 640
 IM_HEIGHT = 480
 
 
+sensors = [{'type': 'sensor.camera.rgb', 'x': 0.7, 'y': 0.0, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
+            'width': 300, 'height': 200, 'fov': 100, 'id': 'Center'},
+
+           {'type': 'sensor.camera.rgb', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0,
+            'yaw': -45.0, 'width': 300, 'height': 200, 'fov': 100, 'id': 'Left'},
+
+           {'type': 'sensor.camera.rgb', 'x': 0.7, 'y': 0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 45.0,
+            'width': 300, 'height': 200, 'fov': 100, 'id': 'Right'},
+
+           {'type': 'sensor.camera.rgb', 'x': -1.8, 'y': 0, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0,
+            'yaw': 180.0, 'width': 300, 'height': 200, 'fov': 130, 'id': 'Rear'},
+
+           {'type': 'sensor.other.gnss', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'id': 'GPS'}
+           ]
+
 def process_img(image):
 	i = np.array(image.raw_data)
 	i2 = i.reshape((IM_HEIGHT, IM_WIDTH, 4))
@@ -17,7 +32,7 @@ def process_img(image):
 	#print(i3.dtype.type)
 	#print(i3)
 	cv2.imshow("Vehicle Sensor Data", i3)
-	cv2.waitKey(0)
+	cv2.waitKey(1)
 	return i3/255.0
 
 
@@ -33,9 +48,9 @@ try:
 	blueprint_library = world.get_blueprint_library()
 	bp = blueprint_library.filter("model3")[0]
 
-	spawn_point = random.choice(world.get_map().get_spawn_points())
+	#spawn_point = random.choice(world.get_map().get_spawn_points())
 	#print(spawn_point)
-	#spawn_point = carla.Transform(carla.Location(x=25.682356, y=4.024460, z=1.843102), carla.Rotation(pitch=0.000000, yaw=-13.668415, roll=0.000000))
+	spawn_point = carla.Transform(carla.Location(x=25.682356, y=4.024460, z=1.843102), carla.Rotation(pitch=0.000000, yaw=-13.668415, roll=0.000000))
 
 	vehicle = world.spawn_actor(bp, spawn_point)
 	
@@ -55,13 +70,13 @@ try:
 	sensor.listen(lambda data: process_img(data))
 
 	vehicle.apply_control(carla.VehicleControl(throttle=0.0, steer=0.0))
-	time.sleep(4)
+	time.sleep(2)
 	print("go!")
 	#vehicle.apply_control(carla.VehicleControl(throttle=1.0, steer=0.0))
 	i = 0
 	tick = 0.5
 	while True:
-		if i > 50:
+		if i > 30:
 			break
 		spectator = world.get_spectator()
 		transform = vehicle.get_transform()
