@@ -29,6 +29,12 @@ class CarlaEnvironment(object):
 									  _pitch = pitch, _yaw = yaw, _roll = roll)
 		stop_vehicle.vehicle_initial()
 
+	def follow_actor(self, actor):
+		spectator = self.__world.get_spectator()
+		transform = actor.get_transform()
+		spectator.set_transform(carla.Transform(transform.location + carla.Location(z=50), \
+		carla.Rotation(pitch=-90)))
+
 if __name__ == '__main__':
 	try:
 		carla_env = CarlaEnvironment()
