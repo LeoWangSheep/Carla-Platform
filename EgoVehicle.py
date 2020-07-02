@@ -76,7 +76,7 @@ class EgoVehicle(object):
 	def drive(self):
 		#self.__vehicle.apply_control(carla.VehicleControl(throttle=1.0, steer=0.0))
 		self.__vehicle.set_autopilot(True)
-		tick = 1
+		tick = 0.05
 		all_time = 0
 		while all_time < 50:
 			# speed = misc.get_speed(self.__vehicle)
