@@ -1,7 +1,9 @@
 import carla
+from DrivingAgent import CarlaAutoAgent
+from CommonTool.agents.tools import misc
+
 import time
-from CommonTool import misc
-import CarlaSensor
+from CarlaEnv import CarlaSensor
 
 class EgoVehicle(object):
 	def __init__(self, env):
@@ -15,6 +17,7 @@ class EgoVehicle(object):
 		self.__collision_sensor = None
 		self.__gnss_sensor = None
 		self.__rear_camera = None
+		self.__agent = None
 
 	def set_start_waypoint(self, _x = 0.000000, _y = 0.000000, _z = 0.000000,\
 		_pitch = 0.000000, _yaw = 0.000000, _roll = 0.000000):
@@ -88,3 +91,33 @@ class EgoVehicle(object):
 			time.sleep(tick)
 			all_time += tick
 		self.__vehicle.apply_control(carla.VehicleControl(throttle=0.0, steer=0.0))
+
+	def apply_default_agent(self):
+		self.__agent = CarlaAutoAgent.AutoAgent(self.__vehicle)
+		target = self.__end_ptr.location
+		self.__agent.set_destination((target.x,
+									  target.y,
+									  target.z,))
+		print("start!")
+		start_time = 0
+		threshold = 100000
+		while True:
+			start_time += 1
+			if start_time >= threshold:
+				print("time out")
+				break
+			control = self.__agent.run_step()
+			self.__vehicle.apply_control(control)
+			self.__env.follow_actor(self.__vehicle)
+			current_pos = self.__vehicle.get_location()
+			print(current_pos)
+			if self.__agent.done():
+				print("done!")
+				break
+			'''
+			if target.x - 7.0 <= current_pos.x <= target.x + 7.0 and \
+			   target.y - 1.0 <= current_pos.y <= target.y + 1.0 and \
+			   target.z - 1.0 <= current_pos.z <= target.z + 1.0:
+				print("arrive!")
+				break
+			'''

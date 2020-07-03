@@ -1,6 +1,6 @@
 import carla
 import time
-from EgoVehicle import EgoVehicle
+from CarlaEnv.EgoVehicle import EgoVehicle
 
 class CarlaEnvironment(object):
 	def __init__(self, _host = 'localhost', _port = 2000, _expired_time=10.0):

@@ -120,7 +120,7 @@ class RGBCamera(Sensor):
 		self._cam_bp.set_attribute("image_size_x", f"{self._img_width}")
 		self._cam_bp.set_attribute("image_size_y", f"{self._img_height}")
 		self._cam_bp.set_attribute("fov", f"{self._img_fov}")
-		self._cam_bp.set_attribute('sensor_tick', '1.0')
+		self._cam_bp.set_attribute('sensor_tick', '0.2')
 
 	def attach_to_vehicle(self, attach_vehicle):
 		# print(self._spawn_point)
