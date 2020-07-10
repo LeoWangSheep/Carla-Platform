@@ -24,9 +24,12 @@ class TrafficLightScenario(Scenario):
 		self._my_ego_vehicle.stop()
 		self._sensor_list = CarlaSensor.SensorList(self._carla_env, self._agent)
 		self._sensor_list.setup_sensor(self._my_ego_vehicle.get_vehicle())
+		print("setting up vehicle...")
 		time.sleep(1)
 		self._traffic_light = self._my_ego_vehicle.get_vehicle().get_traffic_light()
 		self._traffic_light_lock = Lock()
+		print("setting up scenario...")
+		time.sleep(5)
 
 	def run_scenario(self):
 		detect_thread = Thread(target = self.agent_detect)
@@ -35,8 +38,8 @@ class TrafficLightScenario(Scenario):
 		traffic_thread.setDaemon(True)
 		traffic_thread.start()
 		detect_thread.start()
-		detect_thread.join()
 		traffic_thread.join()
+		detect_thread.join()
 		print("done")
 
 	def traffic_light_change(self):
@@ -73,6 +76,7 @@ class TrafficLightScenario(Scenario):
 		#if vehicle.is_at_traffic_light():
 		self._traffic_light_lock.acquire()
 		traffic_light = self._traffic_light
+		# print(self._traffic_light)
 		if color == 0:
 			print("set traffic light to Red")
 			traffic_light.set_state(carla.TrafficLightState.Red)

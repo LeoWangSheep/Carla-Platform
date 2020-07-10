@@ -97,7 +97,7 @@ class RGBCamera(Sensor):
 		cv2.waitKey(1)
 		if self._recording:
 			image.save_to_disk('img_saved_HD/%06d.png' % image.frame)
-		return i3/255.0
+		# return i3/255.0
 
 class LidarSensor(Sensor):
 	def __init__(self, env, sensor_item, sensor_data_container):
