@@ -6,4 +6,6 @@ STEP 2 download Carla Simulator
 
 STEP 3 set environment variable (PYTHONPATH)
 
-STEP 4 run MainLoop.py
+STEP 4 modify the ./DrivingAgent/DetectAgent.py 's detect function
+
+STEP 5 run MainLoop.py

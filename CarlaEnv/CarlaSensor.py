@@ -3,49 +3,20 @@ import numpy as np
 import cv2
 import carla
 
-
-def parse_img(image, img_height, img_width, sensor_type):
-	i = np.array(image.raw_data)
-	i2 = i.reshape((img_height, img_width, 4))
-	i3 = i2[:, :, :3]
-	cv2.imshow(sensor_type + " Camera", i3)
-	cv2.waitKey(1)
-	return i3/255.0
-
-SENSOR_LIST = [
-			{'type': 'sensor.camera.rgb', 'x': 0.7, 'y': 0.0, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
-             'width': 300, 'height': 200, 'fov': 100, 'id': 'Center'},
-
-            {'type': 'sensor.camera.rgb', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0,
-             'yaw': -45.0, 'width': 300, 'height': 200, 'fov': 100, 'id': 'Left'},
-
-            {'type': 'sensor.camera.rgb', 'x': 0.7, 'y': 0.4, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 45.0,
-             'width': 300, 'height': 200, 'fov': 100, 'id': 'Right'},
-
-            {'type': 'sensor.camera.rgb', 'x': -1.8, 'y': 0, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0,
-             'yaw': 180.0, 'width': 300, 'height': 200, 'fov': 130, 'id': 'Rear'},
-
-            {'type': 'sensor.other.gnss', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'id': 'GPS'},
-
-            {'type' : 'sensor.other.collision', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'id': 'Collision'},
-
-            {'type' : 'sensor.other.lane_invasion', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'id': 'LaneInvasion'}
-           
-           ]
-
 def get_actor_display_name(actor, truncate=250):
 	name = ' '.join(actor.type_id.replace('_', '.').title().split('.')[1:])
 	return (name[:truncate - 1] + u'\u2026') if len(name) > truncate else name
 
 class Sensor(object):
-	def __init__(self, env, sensor_id):
+	def __init__(self, env, sensor_item, sensor_data_container):
 		self._env = env
 		self._world = env.get_world()
 		self._sensor = None
 		self._bp_library = self._world.get_blueprint_library()
-		self._cam_bp = self._bp_library.find(SENSOR_LIST[sensor_id]['type'])
-		self._sensor_id = SENSOR_LIST[sensor_id]['id']
+		self._cam_bp = self._bp_library.find(sensor_item['type'])
+		self._sensor_type = sensor_item['id']
 		self._spawn_point = carla.Transform()
+		self._sensor_data_container = sensor_data_container
 
 	def attach_to_vehicle(self, attach_vehicle):
 		self._sensor = self._world.spawn_actor(self._cam_bp, self._spawn_point, attach_to = attach_vehicle)
@@ -60,12 +31,15 @@ class Sensor(object):
 	def _on_event(weak_self, event):
  		pass
 
+	def destory(self):
+		self._sensor.clean_actors()
+
 
 class CollisionSensor(Sensor):
-	def __init__(self, env):
-		sensor_id = 5
-		super().__init__(env, sensor_id)
-		self.__collision_time = 0
+	def __init__(self, env, sensor_data_container):
+		sensor_item = {'type' : 'sensor.other.collision', 'x': 0.7, 'y': -0.4, 'z': 1.60, 'id': 'Collision'}
+		super().__init__(env, sensor_item, sensor_data_container)
+		self._collision_time = 0
 
 	@staticmethod
 	def _on_event(weak_self, event):
@@ -73,71 +47,135 @@ class CollisionSensor(Sensor):
 		if not self:
 			return
 		actor_type = get_actor_display_name(event.other_actor)
-		self.__collision_time += 1
+		self._collision_time += 1
 		# print("Collision with ", actor_type)
 
 class GnssSensor(Sensor):
-	def __init__(self, env):
-		sensor_id = 4
-		super().__init__(env, sensor_id)
-		self.__sensor_location_x = SENSOR_LIST[sensor_id]['x']
-		self.__sensor_location_y = SENSOR_LIST[sensor_id]['y']
-		self.__sensor_location_z = SENSOR_LIST[sensor_id]['z']
-		self.__spawn_point = carla.Transform(carla.Location( x = self.__sensor_location_x, \
-		 													 y = self.__sensor_location_y, \
-		 													 z = self.__sensor_location_z))
-		self.__lat = 0.0
-		self.__lon = 0.0
-
+	def __init__(self, env, sensor_item, sensor_data_container):
+		super().__init__(env, sensor_item, sensor_data_container)
+		self._sensor_location = carla.Location(x=sensor_item['x'], y=sensor_item['y'],
+										 z=sensor_item['z'])
+		self._sensor_rotation = carla.Rotation()
+		self._spawn_point = carla.Transform(self._sensor_location, self._sensor_rotation)
+		self._lat = 0.0
+		self._lon = 0.0
 	@staticmethod
-	def _on_event(weak_self, event):
+	def _on_event(weak_self, gnss_data):
 		self = weak_self()
 		if not self:
 			return
-		self.lat = event.latitude
-		self.lon = event.longitude
+		array = np.array([gnss_data.latitude,
+						  gnss_data.longitude,
+						  gnss_data.altitude], dtype=np.float64)
+		self._sensor_data_container.update_data(self._sensor_type, array, gnss_data.frame)
 		# print("latitude: ", self.lat, "longitude: ", self.lon)
 
 class RGBCamera(Sensor):
-	def __init__(self, env, sensor_id):
-		super().__init__(env, sensor_id)
-		self._sensor_location_x = SENSOR_LIST[sensor_id]['x']
-		self._sensor_location_y = SENSOR_LIST[sensor_id]['y']
-		self._sensor_location_z = SENSOR_LIST[sensor_id]['z']
-		self._roll = SENSOR_LIST[sensor_id]['roll']
-		self._pitch = SENSOR_LIST[sensor_id]['pitch']
-		self._yaw = SENSOR_LIST[sensor_id]['yaw']
-		self._sensor_type = SENSOR_LIST[sensor_id]['id']
-		self._img_width = SENSOR_LIST[sensor_id]['width']
-		self._img_height = SENSOR_LIST[sensor_id]['height']
-		self._img_fov = SENSOR_LIST[sensor_id]['fov']
-		self._spawn_point = carla.Transform(carla.Location( x = self._sensor_location_x, \
-		 													 y = self._sensor_location_y, \
-		 													 z = self._sensor_location_z), 
-							 				 carla.Rotation( pitch = self._pitch, \
-							 				 				 yaw = self._yaw, \
-							 				 				 roll = self._roll))
-		self._cam_bp.set_attribute("image_size_x", f"{self._img_width}")
-		self._cam_bp.set_attribute("image_size_y", f"{self._img_height}")
-		self._cam_bp.set_attribute("fov", f"{self._img_fov}")
-		self._cam_bp.set_attribute('sensor_tick', '0.2')
+	def __init__(self, env, sensor_item, sensor_data_container):
+		super().__init__(env, sensor_item, sensor_data_container)
+		self._cam_bp.set_attribute('image_size_x', str(sensor_item['width']))
+		self._cam_bp.set_attribute('image_size_y', str(sensor_item['height']))
+		self._cam_bp.set_attribute('fov', str(sensor_item['fov']))
+		self._sensor_location = carla.Location(x=sensor_item['x'], y=sensor_item['y'],
+										 z=sensor_item['z'])
+		self._sensor_rotation = carla.Rotation(pitch=sensor_item['pitch'],
+										 roll=sensor_item['roll'],
+										 yaw=sensor_item['yaw'])
+		self._spawn_point = carla.Transform(self._sensor_location, self._sensor_rotation)
+		self._recording = False
 
-	def attach_to_vehicle(self, attach_vehicle):
-		# print(self._spawn_point)
-		self._sensor = self._world.spawn_actor(self._cam_bp, self._spawn_point, attach_to = attach_vehicle)
-		self._env.add_actor(self._sensor)
-		weak_self = weakref.ref(self)
-
-		self._sensor.listen(lambda image: self._parse_img(weak_self, image))
-	
 	@staticmethod
-	def _parse_img(weak_self, image):
+	def _on_event(weak_self, image):
 		self = weak_self()
 		if not self:
 			return
-		i = np.array(image.raw_data)
-		i2 = i.reshape((self._img_height, self._img_width, 4))
-		i3 = i2[:, :, :3]
+		array = np.frombuffer(image.raw_data, dtype=np.dtype("uint8"))
+		array = np.reshape(array, (image.height, image.width, 4))
+		self._sensor_data_container.update_data(self._sensor_type, array, image.frame)
+		i3 = array[:, :, :3]
 		cv2.imshow(self._sensor_type + " Camera", i3)
 		cv2.waitKey(1)
+		if self._recording:
+			image.save_to_disk('img_saved_HD/%06d.png' % image.frame)
 		return i3/255.0
+
+class LidarSensor(Sensor):
+	def __init__(self, env, sensor_item, sensor_data_container):
+		super().__init__(env, sensor_item, sensor_data_container)
+		self._cam_bp.set_attribute('range', str(sensor_item['range']))
+		self._cam_bp.set_attribute('rotation_frequency', str(sensor_item['rotation_frequency']))
+		self._cam_bp.set_attribute('channels', str(sensor_item['channels']))
+		self._cam_bp.set_attribute('upper_fov', str(sensor_item['upper_fov']))
+		self._cam_bp.set_attribute('lower_fov', str(sensor_item['lower_fov']))
+		self._cam_bp.set_attribute('points_per_second', str(sensor_item['points_per_second']))
+		self._sensor_location = carla.Location(x=sensor_item['x'], y=sensor_item['y'],
+										 z=sensor_item['z'])
+		self._sensor_rotation = carla.Rotation(pitch=sensor_item['pitch'],
+										 roll=sensor_item['roll'],
+										 yaw=sensor_item['yaw'])
+
+	@staticmethod
+	def _on_event(weak_self, lidar_data):
+		self = weak_self()
+		if not self:
+			return
+		points = np.frombuffer(lidar_data.raw_data, dtype=np.dtype('f4'))
+		points = np.reshape(points, (int(points.shape[0] / 3), 3))
+		self._sensor_data_container.update_data(self._sensor_type, points, lidar_data.frame)
+
+class SensorList():
+	def __init__(self, env, agent):
+		self._env = env
+		self._agent = agent
+		self._sensor_list = []
+		self._sensor_data = SensorDataContainer()
+
+	def setup_sensor(self, attach_vehicle):
+		init_sensor_map = self._agent.initial_sensor()
+		this_sensor = None
+		for sensor_item in init_sensor_map:
+			should_attach = False
+			if sensor_item['type'].startswith('sensor.camera'):
+				# set up physical camera sensor
+				this_sensor = RGBCamera(self._env, sensor_item, self._sensor_data)
+				should_attach = True
+			elif sensor_item['type'].startswith('sensor.lidar'):
+				# set up lidar sensor
+				this_sensor = LidarSensor(self._env, sensor_item, self._sensor_data)
+				should_attach = True
+			elif sensor_item['type'].startswith('sensor.other.gnss'):
+				# set up gnss sensor
+				this_sensor = GnssSensor(self._env, sensor_item, self._sensor_data)
+				should_attach = True
+			if should_attach:
+				self._sensor_data.add_sensor(sensor_item)
+				this_sensor.attach_to_vehicle(attach_vehicle)
+				self._sensor_list.append(this_sensor)
+
+	def get_data(self):
+		return self._sensor_data.get_data()
+
+	def destroy_sensors(self):
+		for sensor_obj in self._sensor_list:
+			sensor_obj.destory()
+
+class SensorDataContainer:
+	def __init__(self):
+		self._sensor_data = {}
+
+	def add_sensor(self, sensor_item):
+		self._sensor_data[sensor_item['id']] = {}
+		self._sensor_data[sensor_item['id']]['sensor'] = sensor_item
+		self._sensor_data[sensor_item['id']]['data'] = None
+		self._sensor_data[sensor_item['id']]['timestamp'] = -1
+
+	def update_data(self, id, data, timestamp):
+		self._sensor_data[id]['data'] = data
+		self._sensor_data[id]['timestamp'] = timestamp
+
+	def get_data(self):
+		return self._sensor_data
+
+
+
+

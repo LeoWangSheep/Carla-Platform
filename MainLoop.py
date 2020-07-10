@@ -1,36 +1,35 @@
 import time
 
-from CarlaEnv.EnvironmentSetting import CarlaEnvironment
-from CarlaEnv.EgoVehicle import EgoVehicle
+from TestScenario.TrafficLightScenario import TrafficLightScenario
+from DrivingAgent.DetectAgent import DetectAgent
 
 
 
 def main_loop():
 	try:
-		carla_env = CarlaEnvironment()
+		traffic_scenario = TrafficLightScenario()
+		my_agent = DetectAgent()
+		traffic_scenario.set_up_scenario_start(my_agent)
+		traffic_scenario.run_scenario()
+		'''
 		my_ego_vehicle = EgoVehicle(carla_env)
 
-		my_ego_vehicle.set_start_waypoint( _x = 25, _y = 8, _z = 1,\
+		my_ego_vehicle.set_start_waypoint( _x = 70, _y = -133, _z = 10,\
 									  _pitch = 0, _yaw = 0, _roll = 0)
-		my_ego_vehicle.set_end_waypoint( _x = 100, _y = 4, _z = 1,\
+		my_ego_vehicle.set_end_waypoint( _x = 100, _y = -133, _z = 5,\
 									  _pitch = 0, _yaw = 0, _roll = 0)
 		my_ego_vehicle.vehicle_initial()
-		# my_ego_vehicle.bind_collision_sensor()
-		# my_ego_vehicle.bind_gnss_sensor()
-		my_ego_vehicle.bind_center_camera()
-		# my_ego_vehicle.bind_rear_camera()
-		# my_ego_vehicle.bind_left_camera()
-		# my_ego_vehicle.bind_right_camera()
+
 		carla_env.follow_actor(my_ego_vehicle.get_vehicle())
-		'''
-		carla_env.spawn_stop_vehicle( x = 50, y = 4, z = 1,\
-									  pitch = 0, yaw = 0, roll = 0)
-		'''
+		my_ego_vehicle.stop()
+
 		my_ego_vehicle.apply_default_agent()
+		'''
+		time.sleep(10)
 	except Exception as e:
 		print("Error Occur :", e)
 	finally:
-		carla_env.clean_actors()
+		traffic_scenario.scenario_end()
 
 
 if __name__ == '__main__':

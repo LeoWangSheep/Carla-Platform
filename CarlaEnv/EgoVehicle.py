@@ -52,30 +52,6 @@ class EgoVehicle(object):
 	def get_vehicle(self):
 		return self.__vehicle
 
-	def bind_collision_sensor(self):
-		self.__collision_sensor = CarlaSensor.CollisionSensor(self.__env)
-		self.__collision_sensor.attach_to_vehicle(self.__vehicle)
-
-	def bind_gnss_sensor(self):
-		self.__gnss_sensor = CarlaSensor.GnssSensor(self.__env)
-		self.__gnss_sensor.attach_to_vehicle(self.__vehicle)
-
-	def bind_center_camera(self):
-		self.__rear_camera = CarlaSensor.RGBCamera(self.__env, 0)
-		self.__rear_camera.attach_to_vehicle(self.__vehicle)
-
-	def bind_left_camera(self):
-		self.__rear_camera = CarlaSensor.RGBCamera(self.__env, 1)
-		self.__rear_camera.attach_to_vehicle(self.__vehicle)
-
-	def bind_right_camera(self):
-		self.__rear_camera = CarlaSensor.RGBCamera(self.__env, 2)
-		self.__rear_camera.attach_to_vehicle(self.__vehicle)
-
-	def bind_rear_camera(self):
-		self.__rear_camera = CarlaSensor.RGBCamera(self.__env, 3)
-		self.__rear_camera.attach_to_vehicle(self.__vehicle)
-
 	def drive(self):
 		#self.__vehicle.apply_control(carla.VehicleControl(throttle=1.0, steer=0.0))
 		self.__vehicle.set_autopilot(True)
@@ -92,32 +68,38 @@ class EgoVehicle(object):
 			all_time += tick
 		self.__vehicle.apply_control(carla.VehicleControl(throttle=0.0, steer=0.0))
 
+	def stop(self):
+		self.__vehicle.apply_control(carla.VehicleControl(hand_brake = True))
+
 	def apply_default_agent(self):
 		self.__agent = CarlaAutoAgent.AutoAgent(self.__vehicle)
+		self.__sensor_list = CarlaSensor.SensorList(self.__env, self.__agent)
+		self.__sensor_list.setup_sensor(self.__vehicle)
+
 		target = self.__end_ptr.location
 		self.__agent.set_destination((target.x,
 									  target.y,
 									  target.z,))
 		print("start!")
 		start_time = 0
-		threshold = 100000
+		threshold = 500
 		while True:
 			start_time += 1
 			if start_time >= threshold:
 				print("time out")
 				break
+			input_data = self.__sensor_list.get_data()
+			print(input_data['Center']['data'])
 			control = self.__agent.run_step()
+
 			self.__vehicle.apply_control(control)
 			self.__env.follow_actor(self.__vehicle)
-			current_pos = self.__vehicle.get_location()
-			print(current_pos)
+			# current_pos = self.__vehicle.get_location()
+			# print(current_pos)
 			if self.__agent.done():
 				print("done!")
 				break
-			'''
-			if target.x - 7.0 <= current_pos.x <= target.x + 7.0 and \
-			   target.y - 1.0 <= current_pos.y <= target.y + 1.0 and \
-			   target.z - 1.0 <= current_pos.z <= target.z + 1.0:
-				print("arrive!")
-				break
-			'''
+		# self.__sensor_list.destroy_sensors()
+
+	def bind_agent(self, agent):
+		self.__agent = agent
