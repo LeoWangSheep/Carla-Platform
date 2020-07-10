@@ -83,6 +83,7 @@ class RGBCamera(Sensor):
 										 yaw=sensor_item['yaw'])
 		self._spawn_point = carla.Transform(self._sensor_location, self._sensor_rotation)
 		self._recording = False
+		self._panel_lock = True
 
 	@staticmethod
 	def _on_event(weak_self, image):
@@ -92,12 +93,14 @@ class RGBCamera(Sensor):
 		array = np.frombuffer(image.raw_data, dtype=np.dtype("uint8"))
 		array = np.reshape(array, (image.height, image.width, 4))
 		self._sensor_data_container.update_data(self._sensor_type, array, image.frame)
-		i3 = array[:, :, :3]
-		cv2.imshow(self._sensor_type + " Camera", i3)
-		cv2.waitKey(1)
+		if self._panel_lock:
+			self._panel_lock = False
+			i3 = array[:, :, :3]
+			cv2.imshow(self._sensor_type + " Camera", i3)
+			cv2.waitKey(1)
+			self._panel_lock = True
 		if self._recording:
-			image.save_to_disk('img_saved_HD/%06d.png' % image.frame)
-		# return i3/255.0
+			image.save_to_disk('camera_img/%06d.png' % image.frame)
 
 class LidarSensor(Sensor):
 	def __init__(self, env, sensor_item, sensor_data_container):

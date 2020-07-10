@@ -5,6 +5,7 @@ from CarlaEnv.EnvironmentSetting import CarlaEnvironment
 from CarlaEnv.EgoVehicle import EgoVehicle
 from DrivingAgent import CarlaAutoAgent
 from CarlaEnv import CarlaSensor
+from DrivingAgent.DetectAgent import DetectAgent
 
 import carla
 
@@ -15,7 +16,8 @@ class TrafficLightScenario(Scenario):
 	def set_up_scenario_start(self, agent):
 		self._agent = agent
 		# 检测下agent是否detect
-
+		if not isinstance(self._agent, DetectAgent):
+			raise Exception("This agent is not a detect agent")
 		self._my_ego_vehicle.bind_agent(self._agent)
 		self._my_ego_vehicle.set_start_waypoint( _x = 69, _y = -133, _z = 10,\
 									  _pitch = 0, _yaw = 0, _roll = 0)
@@ -25,11 +27,16 @@ class TrafficLightScenario(Scenario):
 		self._sensor_list = CarlaSensor.SensorList(self._carla_env, self._agent)
 		self._sensor_list.setup_sensor(self._my_ego_vehicle.get_vehicle())
 		print("setting up vehicle...")
-		time.sleep(1)
+		# print(self._my_ego_vehicle.get_vehicle())
+		time.sleep(2)
 		self._traffic_light = self._my_ego_vehicle.get_vehicle().get_traffic_light()
 		self._traffic_light_lock = Lock()
 		print("setting up scenario...")
-		time.sleep(5)
+		# print(self._traffic_light)
+		while not isinstance(self._traffic_light, carla.TrafficLight):
+			print(self._traffic_light)
+			raise Exception("Get error traffic sign")
+		
 
 	def run_scenario(self):
 		detect_thread = Thread(target = self.agent_detect)
