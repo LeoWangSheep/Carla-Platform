@@ -9,36 +9,57 @@ from DrivingAgent.DetectAgent import DetectAgent
 
 import carla
 
+t_l_position = [{ 'x' : 69, 'y' : -133, 'z' : 10, 'pitch' : 0, 'yaw' : 0, 'roll' : 0, 'id' : 1}, 
+				{ 'x' : 140, 'y' : -194, 'z' : 1, 'pitch' : 0, 'yaw' : 0, 'roll' : 0, 'id' : 2},
+				{ 'x' : 97, 'y' : -136, 'z' : 10, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 3},
+				{ 'x' : 11, 'y' : -182, 'z' : 5, 'pitch' : 0, 'yaw' : -90, 'roll' : 0, 'id' : 4}]
+
 class TrafficLightScenario(Scenario):
 	def __init__(self):
 		super().__init__(3)
 
 	def set_up_scenario_start(self, agent):
 		self._agent = agent
-		# 检测下agent是否detect
 		if not isinstance(self._agent, DetectAgent):
 			raise Exception("This agent is not a detect agent")
 		self._my_ego_vehicle.bind_agent(self._agent)
 		self._my_ego_vehicle.set_start_waypoint( _x = 69, _y = -133, _z = 10,\
 									  _pitch = 0, _yaw = 0, _roll = 0)
 		self._my_ego_vehicle.vehicle_initial()
-		self._carla_env.follow_actor(self._my_ego_vehicle.get_vehicle())
+		self._physical_vehicle = self._my_ego_vehicle.get_vehicle()
+		# self._carla_env.follow_actor(self._physical_vehicle)
 		self._my_ego_vehicle.stop()
 		self._sensor_list = CarlaSensor.SensorList(self._carla_env, self._agent)
-		self._sensor_list.setup_sensor(self._my_ego_vehicle.get_vehicle())
+		self._sensor_list.setup_sensor(self._physical_vehicle)
 		print("setting up vehicle...")
-		# print(self._my_ego_vehicle.get_vehicle())
-		time.sleep(2)
-		self._traffic_light = self._my_ego_vehicle.get_vehicle().get_traffic_light()
+		time.sleep(1)
 		self._traffic_light_lock = Lock()
-		print("setting up scenario...")
-		# print(self._traffic_light)
-		while not isinstance(self._traffic_light, carla.TrafficLight):
-			print(self._traffic_light)
-			raise Exception("Get error traffic sign")
-		
 
 	def run_scenario(self):
+
+		for position in t_l_position:
+			# change the traffic light position first
+			self.change_next_position(position)
+			# set the flag to false
+			self._scenario_done = False
+			# run the detect thread
+			self.run_instance()
+
+	def change_next_position(self, position):
+		print("Get to next Traffic light position...: Position" , position['id'])
+		next_transform = carla.Transform(carla.Location(x = position['x'], y = position['y'], z = position['z']), \
+			carla.Rotation(pitch = position['pitch'], yaw = position['yaw'], roll = position['roll']))
+		self._physical_vehicle.set_transform(next_transform)
+		self._my_ego_vehicle.stop()
+		print("setting up vehicle...")
+		time.sleep(2)
+		self._carla_env.follow_actor(self._physical_vehicle)
+		self._traffic_light = self._carla_env.get_next_traffic_light(self._physical_vehicle)
+		if not isinstance(self._traffic_light, carla.TrafficLight):
+			print(self._traffic_light)
+			raise Exception("Get error traffic sign")
+
+	def run_instance(self):
 		detect_thread = Thread(target = self.agent_detect)
 		traffic_thread = Thread(target = self.traffic_light_change)
 		detect_thread.setDaemon(True)
@@ -47,7 +68,7 @@ class TrafficLightScenario(Scenario):
 		detect_thread.start()
 		traffic_thread.join()
 		detect_thread.join()
-		print("done")
+		# print("done")
 
 	def traffic_light_change(self):
 		# red light
@@ -71,13 +92,7 @@ class TrafficLightScenario(Scenario):
 			time.sleep(1)
 			if self.scenario_done():
 				break
-		print("detect ends")
-
-	def scenario_done(self):
-		return self._scenario_done
-
-	def scenario_end(self):
-		self._carla_env.clean_actors()
+		# print("detect ends")
 
 	def set_traffic_light(self, color, timeout):
 		#if vehicle.is_at_traffic_light():

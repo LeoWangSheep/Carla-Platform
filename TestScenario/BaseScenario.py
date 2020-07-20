@@ -14,5 +14,8 @@ class Scenario(object):
 		pass
 
 	def scenario_done(self):
-		pass
+		return self._scenario_done
+
+	def scenario_end(self):
+		self._carla_env.clean_actors()
 

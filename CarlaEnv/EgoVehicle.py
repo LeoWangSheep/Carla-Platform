@@ -71,6 +71,12 @@ class EgoVehicle(object):
 	def stop(self):
 		self.__vehicle.apply_control(carla.VehicleControl(hand_brake = True))
 
+
+	def stop_agent(self):
+		self.__agent = CarlaAutoAgent.AutoAgent(self.__vehicle)
+		self.__sensor_list = CarlaSensor.SensorList(self.__env, self.__agent)
+		self.__sensor_list.setup_sensor(self.__vehicle)
+		
 	def apply_default_agent(self):
 		self.__agent = CarlaAutoAgent.AutoAgent(self.__vehicle)
 		self.__sensor_list = CarlaSensor.SensorList(self.__env, self.__agent)
@@ -82,20 +88,21 @@ class EgoVehicle(object):
 									  target.z,))
 		print("start!")
 		start_time = 0
-		threshold = 500
+		threshold = 5000
 		while True:
 			start_time += 1
 			if start_time >= threshold:
 				print("time out")
 				break
 			input_data = self.__sensor_list.get_data()
-			print(input_data['Center']['data'])
+			# print(input_data['Center']['data'])
 			control = self.__agent.run_step()
 
 			self.__vehicle.apply_control(control)
 			self.__env.follow_actor(self.__vehicle)
-			# current_pos = self.__vehicle.get_location()
-			# print(current_pos)
+			current_pos = self.__vehicle.get_location()
+			if self.__vehicle.is_at_traffic_light():
+				print(current_pos)
 			if self.__agent.done():
 				print("done!")
 				break

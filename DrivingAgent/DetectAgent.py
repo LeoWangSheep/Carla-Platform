@@ -21,13 +21,12 @@ class DetectAgent(Agent):
 		pass
 
 	def done(self):
-		return self._agent.done()
+		pass
 
 	def detect(self, input_data):
 		detect_result = 'Green'
 		front_camera = input_data['Center']['data']
-		# data_timestamp = input_data['Center']['timestamp']
-		print(front_camera)
+		# print(front_camera)
 		'''
 		please implement or call your object-detect function here
 		'''
