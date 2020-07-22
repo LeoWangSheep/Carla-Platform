@@ -94,15 +94,13 @@ class EgoVehicle(object):
 			if start_time >= threshold:
 				print("time out")
 				break
-			input_data = self.__sensor_list.get_data()
+			# input_data = self.__sensor_list.get_data()
 			# print(input_data['Center']['data'])
 			control = self.__agent.run_step()
-
 			self.__vehicle.apply_control(control)
-			self.__env.follow_actor(self.__vehicle)
+			self.__env.follow_actor(self.__vehicle, 100)
 			current_pos = self.__vehicle.get_location()
-			if self.__vehicle.is_at_traffic_light():
-				print(current_pos)
+			print(current_pos)
 			if self.__agent.done():
 				print("done!")
 				break

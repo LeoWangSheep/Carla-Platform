@@ -37,10 +37,10 @@ class CarlaEnvironment(object):
 									  _pitch = pitch, _yaw = yaw, _roll = roll)
 		stop_vehicle.vehicle_initial()
 
-	def follow_actor(self, actor):
+	def follow_actor(self, actor, height = 50):
 		spectator = CarlaEnvironment._world.get_spectator()
 		transform = actor.get_transform()
-		spectator.set_transform(carla.Transform(transform.location + carla.Location(z=50), \
+		spectator.set_transform(carla.Transform(transform.location + carla.Location(z = height), \
 		carla.Rotation(pitch=-90)))
 
 	def set_traffic_light(self, vehicle, color):

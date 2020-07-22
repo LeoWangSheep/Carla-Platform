@@ -12,25 +12,27 @@ def main_loop():
 	try:
 		
 		# test traffic light scenario
-
 		traffic_scenario = TrafficLightScenario()
 		my_agent = DetectAgent()
 		traffic_scenario.set_up_scenario_start(my_agent)
 		traffic_scenario.run_scenario()
+
 		'''
 		carla_env = CarlaEnvironment()
 		my_ego_vehicle = EgoVehicle(carla_env)
 
-		my_ego_vehicle.set_start_waypoint( _x = 11, _y = -182, _z = 5,\
-									  _pitch = 0, _yaw = -90, _roll = 0)
+		my_ego_vehicle.set_start_waypoint( _x = 165, _y = 195, _z = 5,\
+									  _pitch = 0, _yaw = 180, _roll = 0)
 		
-		my_ego_vehicle.set_end_waypoint( _x = 70, _y = -150, _z = 5,\
-									  _pitch = 0, _yaw = 0, _roll = 0)
+		
+		my_ego_vehicle.set_end_waypoint(_x = -45, _y = 195, _z = 5,\
+									  _pitch = 0, _yaw = 180, _roll = 0)
+		
 		my_ego_vehicle.vehicle_initial()
 
-		carla_env.follow_actor(my_ego_vehicle.get_vehicle())
+		carla_env.follow_actor(my_ego_vehicle.get_vehicle(), 150)
 		my_ego_vehicle.stop()
-
+		# time.sleep(10)
 		my_ego_vehicle.apply_default_agent()
 		# time.sleep(10)
 		'''
