@@ -1,4 +1,5 @@
 import weakref
+import copy
 import numpy as np
 import cv2
 import carla
@@ -91,6 +92,7 @@ class RGBCamera(Sensor):
 		if not self:
 			return
 		array = np.frombuffer(image.raw_data, dtype=np.dtype("uint8"))
+		array = copy.deepcopy(array)
 		array = np.reshape(array, (image.height, image.width, 4))
 		self._sensor_data_container.update_data(self._sensor_type, array, image.frame)
 		if self._panel_lock:
@@ -123,6 +125,7 @@ class LidarSensor(Sensor):
 		if not self:
 			return
 		points = np.frombuffer(lidar_data.raw_data, dtype=np.dtype('f4'))
+		points = copy.deepcopy(points)
 		points = np.reshape(points, (int(points.shape[0] / 3), 3))
 		self._sensor_data_container.update_data(self._sensor_type, points, lidar_data.frame)
 

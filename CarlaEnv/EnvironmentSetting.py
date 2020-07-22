@@ -27,7 +27,8 @@ class CarlaEnvironment(object):
 
 	def clean_actors(self):
 		for actor in self.__actor_list:	
-			actor.destroy()
+			if actor is not None:
+				actor.destroy()
 		print("All clearned up!")
 
 	def spawn_stop_vehicle(self, x = 0.000000, y = 0.000000, z = 0.000000,\

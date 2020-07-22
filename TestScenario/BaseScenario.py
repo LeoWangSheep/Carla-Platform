@@ -11,6 +11,10 @@ class Scenario(object):
 	def __init__(self, town_id):
 		# just use to stop the progame
 		pygame.display.init()
+		'''
+		The _scenario_done flag can be used to decide that the scenario should be stopped
+		All the thread in this scenarios should stop when this flag is set to True 
+		'''
 		self._scenario_done = False
 		Scenario._carla_env = CarlaEnvironment(town_id)
 		self._my_ego_vehicle = EgoVehicle(Scenario._carla_env)
@@ -37,6 +41,7 @@ class Scenario(object):
 
 	def scenario_end(self):
 		self._jump_out_thread.join()
+		pygame.quit()
 		Scenario._carla_env.clean_actors()
 
 	def _set_scenario_pause_ready(self):

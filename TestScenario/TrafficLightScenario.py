@@ -62,7 +62,6 @@ class TrafficLightScenario(Scenario):
 		traffic_thread = Thread(target = self.traffic_light_change)
 		self.start_thread(traffic_thread)
 		self.start_thread(detect_thread)
-
 		traffic_thread.join()
 		detect_thread.join()
 
