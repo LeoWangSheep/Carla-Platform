@@ -42,13 +42,7 @@ class TrafficLightScenario(Scenario):
 
 	def change_next_position(self, position):
 		print("Get to next Traffic light position...: Position" , position['id'])
-		next_transform = carla.Transform(carla.Location(x = position['x'], y = position['y'], z = position['z']), \
-			carla.Rotation(pitch = position['pitch'], yaw = position['yaw'], roll = position['roll']))
-		self._physical_vehicle.set_transform(next_transform)
-		self._my_ego_vehicle.stop()
-		print("setting up ego vehicle...")
-		time.sleep(2)
-		Scenario._carla_env.follow_actor(self._physical_vehicle)
+		super().change_next_position(position)
 		self._traffic_light = Scenario._carla_env.get_next_traffic_light(self._physical_vehicle)
 		if not isinstance(self._traffic_light, carla.TrafficLight):
 			print(self._traffic_light)

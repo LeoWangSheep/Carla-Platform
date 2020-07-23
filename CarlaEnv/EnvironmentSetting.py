@@ -38,11 +38,20 @@ class CarlaEnvironment(object):
 									  _pitch = pitch, _yaw = yaw, _roll = roll)
 		stop_vehicle.vehicle_initial()
 
-	def follow_actor(self, actor, height = 50):
+	'''
+	mode:
+		0: from up to down
+		1: from back to front
+	'''
+	def follow_actor(self, actor, height = 50, mode = 0):
 		spectator = CarlaEnvironment._world.get_spectator()
 		transform = actor.get_transform()
-		spectator.set_transform(carla.Transform(transform.location + carla.Location(z = height), \
-		carla.Rotation(pitch=-90)))
+		if mode == 0:
+			spectator.set_transform(carla.Transform(transform.location + carla.Location(z = height), \
+			carla.Rotation(pitch=-90)))
+		elif mode == 1:
+			spectator.set_transform(carla.Transform(transform.location + carla.Location(x = 8, y = -3, z = 3), \
+			carla.Rotation(yaw = 160)))
 
 	def set_traffic_light(self, vehicle, color):
 		if vehicle.is_at_traffic_light():
@@ -58,6 +67,14 @@ class CarlaEnvironment(object):
 		town_str = 'Town0' + str(town_id)
 		print(town_str)
 		CarlaEnvironment._client.load_world(town_str)
+
+	def spawn_new_actor(self, bp_str, location):
+		t_transform = carla.Transform(location, carla.Rotation())
+		bp = CarlaEnvironment._blueprint_library.filter(bp_str)[0]
+		spawn_rst = CarlaEnvironment._world.try_spawn_actor(bp, t_transform)
+		if spawn_rst is not None:
+			spawn_rst.set_simulate_physics(False)
+		return spawn_rst
 
 	@staticmethod
 	def prepare_map():

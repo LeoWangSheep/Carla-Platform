@@ -6,6 +6,8 @@ from CarlaEnv.EnvironmentSetting import CarlaEnvironment
 from CarlaEnv.EgoVehicle import EgoVehicle
 from CarlaEnv import CarlaSensor
 
+import carla
+
 class Scenario(object):
 	_carla_env = None
 	def __init__(self, town_id):
@@ -34,7 +36,7 @@ class Scenario(object):
 		time.sleep(1)
 
 	def run_scenario(self):
-		pass
+		self._scenario_done = True
 
 	def scenario_done(self):
 		return self._scenario_done
@@ -65,5 +67,14 @@ class Scenario(object):
 	def start_thread(self, new_thread):
 		new_thread.setDaemon(True)
 		new_thread.start()
+
+	def change_next_position(self, position):
+		next_transform = carla.Transform(carla.Location(x = position['x'], y = position['y'], z = position['z']), \
+			carla.Rotation(pitch = position['pitch'], yaw = position['yaw'], roll = position['roll']))
+		self._physical_vehicle.set_transform(next_transform)
+		self._my_ego_vehicle.stop()
+		print("setting up ego vehicle...")
+		time.sleep(2)
+		Scenario._carla_env.follow_actor(self._physical_vehicle, mode = 1)
 
 
