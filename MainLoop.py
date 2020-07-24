@@ -14,17 +14,17 @@ def main_loop():
 		
 		# test traffic light scenario
 		'''
-		traffic_scenario = TrafficLightScenario()
+		scenario = TrafficLightScenario()
 		my_agent = DetectAgent()
-		traffic_scenario.set_up_scenario_start(my_agent)
-		traffic_scenario.run_scenario()
-		
+		scenario.set_up_scenario_start(my_agent)
+		scenario.run_scenario()
 		'''
 		
-		object_scenario = ObjectDetectScenario()
+		# test object detect scenario
+		scenario = ObjectDetectScenario()
 		my_agent = DetectAgent()
-		object_scenario.set_up_scenario_start(my_agent)
-		object_scenario.run_scenario()
+		scenario.set_up_scenario_start(my_agent)
+		scenario.run_scenario()
 		
 		'''
 		carla_env = CarlaEnvironment()
@@ -47,8 +47,7 @@ def main_loop():
 	except Exception as e:
 		print("Error Occur :", e)
 	finally:
-		# traffic_scenario.scenario_end()
-		object_scenario.scenario_end()
+		scenario.scenario_end()
 
 		# carla_env.clean_actors()
 

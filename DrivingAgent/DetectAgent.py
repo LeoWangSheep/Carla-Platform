@@ -24,10 +24,16 @@ class DetectAgent(Agent):
 		pass
 
 	def detect(self, input_data):
-		detect_result = 'Green'
-		front_camera = input_data['Center']['data']
+		'''
+		please put all your answer in the "detect_result" list
 
+		In traffic light detect scenario, the possible answers are: Green, Yellow, Red
 		
+		In object detect scenario, the possible answers are: car, truck, bus, motorbike, bicycle, pedestrian
+		The order of your results in the list should follow the order of the entities in the image from left to right
+		'''
+		detect_result = ['car']
+		front_camera = input_data['Center']['data']
 		# print(front_camera)
 		'''
 		please implement or call your object-detect function here

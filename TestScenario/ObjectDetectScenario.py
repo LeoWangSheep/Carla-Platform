@@ -1,5 +1,6 @@
 import time
 import random
+import operator
 from threading import Thread, Lock
 from TestScenario.BaseScenario import Scenario
 from CarlaEnv.EnvironmentSetting import CarlaEnvironment
@@ -10,11 +11,11 @@ from DrivingAgent.DetectAgent import DetectAgent
 
 import carla
 
-o_d_position = [{ 'x' : 165, 'y' : 196, 'z' : 3, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 1}]
+o_d_position = [ { 'x' : 165, 'y' : 196, 'z' : 3, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 1} ]
 
 actor_blueprint_categories = {
 			'car': 'vehicle.tesla.model3',
-			'van': 'vehicle.volkswagen.t2',
+			 # 'van': 'vehicle.volkswagen.t2',
 			'truck': 'vehicle.carlamotors.carlacola',
 			'bus': 'vehicle.volkswagen.t2',
 			'motorbike': 'vehicle.kawasaki.ninja',
@@ -29,9 +30,10 @@ class ObjectDetectScenario(Scenario):
 		self._level_done = False
 
 	def set_up_scenario_start(self, agent):
+		self._correct_answer = []
+		self.time_out = False
 		init_position = o_d_position[0]
 		super().set_up_scenario_start(agent, init_position)
-		time.sleep(10)
 
 	def run_scenario(self):
 		for position in o_d_position:
@@ -53,26 +55,34 @@ class ObjectDetectScenario(Scenario):
 	let the detect function and object generate scenario run concurrently
 	'''
 	def run_instance(self):
-		detect_thread = Thread(target = self.object_generator)
-		self.start_thread(detect_thread)
-		detect_thread.join()
+		for x in range(3):
+			self.object_generator()
+			sleep_thread = Thread(target = self.counting_time)
+			detect_thread = Thread(target = self.agent_detect)
+			self.start_thread(sleep_thread)
+			self.start_thread(detect_thread)
+			sleep_thread.join()
+			detect_thread.join()
+			self.release_object()
 
 	'''
 	call the agent detect function
 	and compare with actual result
 	'''
 	def agent_detect(self):
-		while True:
-			if self._scenario_done:
-				break
-			input_data = self._sensor_list.get_data()
-			detect_result = self._agent.detect(input_data)
-
-
-
-			time.sleep(1)
-			if self._level_done:
-				break
+		if self._scenario_done:
+			return
+		input_data = self._sensor_list.get_data()
+		start_time = time.time()
+		detect_result = self._agent.detect(input_data)
+		if self.time_out:
+			print("Time ran out, detect failed")
+		end_time = time.time()
+		print("Detect Result: ", detect_result, ", Actual Result: ", self._correct_answer)
+		duration = end_time - start_time
+		print("Detect Time Cost: ", duration, "s")
+		time.sleep(1)
+			
 
 
 	def object_generator(self):
@@ -83,13 +93,14 @@ class ObjectDetectScenario(Scenario):
 		area_y = -10
 		dim = area_y / area_x
 		re_dim = area_y / -area_x
-		object_actor_list = []
+		self.object_actor_list = []
+		current_correct_ans = []
 		for x in range(3):
 			if self._scenario_done:
 				break
 			new_actor = None
 			bp_str = random.sample(actor_blueprint_categories.keys(), 1)
-			print(bp_str[0])
+			# print(bp_str[0])
 			while new_actor is None:
 				if self._scenario_done:
 					break
@@ -101,12 +112,24 @@ class ObjectDetectScenario(Scenario):
 				spawn_x = vehicle_location.x + rand_x
 				spawn_y = vehicle_location.y + rand_y
 				spawn_z = vehicle_location.z
-				print("(x: ", spawn_x, ", y: ", spawn_y, ", z: ", spawn_z, ")" )
+				# print("(x: ", spawn_x, ", y: ", spawn_y, ", z: ", spawn_z, ")" )
 				spawn_location = carla.Location(x = spawn_x, y = spawn_y, z = spawn_z)
 				new_actor = Scenario._carla_env.spawn_new_actor(actor_blueprint_categories[bp_str[0]], spawn_location)
-			object_actor_list.append(new_actor)
+			this_set = {'actor' : new_actor, 'actor_name': bp_str[0], 'y' : spawn_y}
+			self.object_actor_list.append(this_set)
+			# print(object_actor_list)
+		self.object_actor_list.sort(key=operator.itemgetter('y'), reverse=True)
+		for actor_set in self.object_actor_list:
+			current_correct_ans.append(actor_set['actor_name'])
+		self._correct_answer = current_correct_ans
+		time.sleep(2.5)
 
-		time.sleep(15)
+	def counting_time(self):
+		time.sleep(10)
+		self.time_out = True
 
-		for actor in object_actor_list:
-			actor.destroy()
+	def release_object(self):
+		for actor_set in self.object_actor_list:
+			actor_set['actor'].destroy()
+		time.sleep(1)
+		self.time_out = False

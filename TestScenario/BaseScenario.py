@@ -59,7 +59,7 @@ class Scenario(object):
 				if self._scenario_done:
 					break
 				if event_type.type == pygame.QUIT:
-					print("KeyBoard Interrupt, quit..")
+					print("KeyBoard Interrupt, quiting...please wait...")
 					self._scenario_done = True
 					break
 					
