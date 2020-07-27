@@ -42,7 +42,7 @@ class TrafficLightScenario(Scenario):
 
 	def change_next_position(self, position):
 		print("Get to next Traffic light position...: Position" , position['id'])
-		super().change_next_position(position)
+		super().change_next_position(position, 1)
 		self._traffic_light = Scenario._carla_env.get_next_traffic_light(self._physical_vehicle)
 		if not isinstance(self._traffic_light, carla.TrafficLight):
 			print(self._traffic_light)

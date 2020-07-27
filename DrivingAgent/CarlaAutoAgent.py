@@ -4,8 +4,9 @@ from DrivingAgent.Agent import Agent
 
 # agent adapter
 class AutoAgent(Agent):
-	def __init__(self, vehicle, target_speed=20):
-		self._agent = BasicAgent(vehicle, target_speed)
+	def __init__(self, vehicle = None, target_speed = 20):
+		if vehicle is not None:
+			self._agent = BasicAgent(vehicle, target_speed)
 
 	def initial_sensor(self):
 		sensors = [
@@ -33,6 +34,9 @@ class AutoAgent(Agent):
 		]
 
 		return sensors 
+
+	def bind_vehicle(self, vehicle, target_speed=20):
+		self._agent = BasicAgent(vehicle, target_speed)
 
 	def set_destination(self, target_waypoint):
 		self._agent.set_destination(target_waypoint)

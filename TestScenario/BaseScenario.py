@@ -11,7 +11,6 @@ import carla
 class Scenario(object):
 	_carla_env = None
 	def __init__(self, town_id):
-		# just use to stop the progame
 		pygame.display.init()
 		'''
 		The _scenario_done flag can be used to decide that the scenario should be stopped
@@ -68,13 +67,15 @@ class Scenario(object):
 		new_thread.setDaemon(True)
 		new_thread.start()
 
-	def change_next_position(self, position):
+	def change_next_position(self, position, mode):
 		next_transform = carla.Transform(carla.Location(x = position['x'], y = position['y'], z = position['z']), \
 			carla.Rotation(pitch = position['pitch'], yaw = position['yaw'], roll = position['roll']))
 		self._physical_vehicle.set_transform(next_transform)
 		self._my_ego_vehicle.stop()
 		print("setting up ego vehicle...")
 		time.sleep(2)
-		Scenario._carla_env.follow_actor(self._physical_vehicle, mode = 1)
-
+		if mode == 1:
+			Scenario._carla_env.follow_actor(self._physical_vehicle, mode = 1)
+		elif mode == 0:
+			Scenario._carla_env.follow_actor(self._physical_vehicle, mode = 0, a_yaw = position['yaw'])
 

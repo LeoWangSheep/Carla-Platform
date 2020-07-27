@@ -37,12 +37,16 @@ class EgoVehicle(object):
 		self.__end_ptr = carla.Transform(carla.Location(x = _x, y = _y, z = _z), \
 			carla.Rotation(pitch = _pitch, yaw = _yaw, roll = _roll))
 
-	def __set_vehicle_blueprint(self, _filter = "model3", _id = 0):
+	def __set_vehicle_blueprint(self, _filter = "model3", _id = 0, is_ego = True):
 		self.__vehicle_blueprint = self.__blueprint_library.filter(_filter)[_id]
+		if is_ego:
+			self.__vehicle_blueprint.set_attribute('color', '0,0,0')
+		elif not is_ego:
+			self.__vehicle_blueprint.set_attribute('color', '255,255,255')
 
 
-	def vehicle_initial(self):
-		self.__set_vehicle_blueprint()
+	def vehicle_initial(self, v_filter = "model3", v_id = 0, is_ego = True):
+		self.__set_vehicle_blueprint(v_filter, v_id, is_ego)
 		# print(self.__vehicle_blueprint)
 		# print(self.__start_ptr)
 		self.__vehicle = self.__world.spawn_actor(self.__vehicle_blueprint, self.__start_ptr)

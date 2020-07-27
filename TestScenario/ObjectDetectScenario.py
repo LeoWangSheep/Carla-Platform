@@ -13,6 +13,7 @@ import carla
 
 o_d_position = [ { 'x' : 165, 'y' : 196, 'z' : 3, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 1} ]
 
+
 actor_blueprint_categories = {
 			'car': 'vehicle.tesla.model3',
 			 # 'van': 'vehicle.volkswagen.t2',
@@ -49,7 +50,7 @@ class ObjectDetectScenario(Scenario):
 
 	def change_next_position(self, position):
 		print("Get to next Object Detect position...: Position" , position['id'])
-		super().change_next_position(position)
+		super().change_next_position(position, 1)
 
 		'''
 	let the detect function and object generate scenario run concurrently

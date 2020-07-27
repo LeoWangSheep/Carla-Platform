@@ -43,12 +43,12 @@ class CarlaEnvironment(object):
 		0: from up to down
 		1: from back to front
 	'''
-	def follow_actor(self, actor, height = 50, mode = 0):
+	def follow_actor(self, actor, height = 50, a_yaw = 0, mode = 0):
 		spectator = CarlaEnvironment._world.get_spectator()
 		transform = actor.get_transform()
 		if mode == 0:
 			spectator.set_transform(carla.Transform(transform.location + carla.Location(z = height), \
-			carla.Rotation(pitch=-90)))
+			carla.Rotation(pitch=-90, yaw = a_yaw)))
 		elif mode == 1:
 			spectator.set_transform(carla.Transform(transform.location + carla.Location(x = 8, y = -3, z = 3), \
 			carla.Rotation(yaw = 160)))
@@ -68,11 +68,15 @@ class CarlaEnvironment(object):
 		print(town_str)
 		CarlaEnvironment._client.load_world(town_str)
 
-	def spawn_new_actor(self, bp_str, location):
-		t_transform = carla.Transform(location, carla.Rotation())
+	def spawn_new_actor(self, bp_str, location, rotation = None, stop = True):
+		t_transform = None
+		if rotation is None:
+			t_transform = carla.Transform(location, carla.Rotation())
+		else:
+			t_transform = carla.Transform(location, rotation)
 		bp = CarlaEnvironment._blueprint_library.filter(bp_str)[0]
 		spawn_rst = CarlaEnvironment._world.try_spawn_actor(bp, t_transform)
-		if spawn_rst is not None:
+		if spawn_rst is not None and stop:
 			spawn_rst.set_simulate_physics(False)
 		return spawn_rst
 
