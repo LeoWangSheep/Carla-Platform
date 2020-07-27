@@ -6,11 +6,17 @@ from TestScenario.DrivingScenario import DrivingScenario
 import carla
 
 t_o_position = [ {'start' : { 'x' : 105, 'y' : -77, 'z' : 10, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 1},
-				  'destination' : { 'x' : 76, 'y' : -50, 'z' : 10, 'pitch' : 0, 'yaw' : 90, 'roll' : 0, 'id' : 1}},
+				   'destination' : { 'x' : 76, 'y' : -50, 'z' : 10, 'pitch' : 0, 'yaw' : 90, 'roll' : 0, 'id' : 1},
+				   'enemy_vehicle' : None },
 				  {'start' : { 'x' : 105, 'y' : -77, 'z' : 10, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 1},
-				  'destination' : { 'x' : 76, 'y' : -50, 'z' : 10, 'pitch' : 0, 'yaw' : 90, 'roll' : 0, 'id' : 1}},
-				  {'start' : { 'x' : 105, 'y' : -77, 'z' : 10, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 1},
-				  'destination' : { 'x' : 76, 'y' : -50, 'z' : 10, 'pitch' : 0, 'yaw' : 90, 'roll' : 0, 'id' : 1}}, ]
+				   'destination' : { 'x' : 76, 'y' : -50, 'z' : 10, 'pitch' : 0, 'yaw' : 90, 'roll' : 0, 'id' : 1},
+				   'enemy_vehicle' : { 'start' : { 'x' : 79, 'y' : -68, 'z' : 10, 'pitch' : 0, 'yaw' : 90, 'roll' : 0, 'id' : 1},
+				   					   'mode' : 'Stop' } },
+				  # {'start' : { 'x' : 105, 'y' : -77, 'z' : 10, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 1},
+				  # 'destination' : { 'x' : 76, 'y' : -50, 'z' : 10, 'pitch' : 0, 'yaw' : 90, 'roll' : 0, 'id' : 1},
+				  # 'enemy_vehicle' : { 'start' : None,
+				  # 					   'mode' : 'Fast' }}, 
+				]
 
 actor_blueprint_categories = {
 			'car1' : 'vehicle.tesla.model3',
@@ -20,6 +26,8 @@ actor_blueprint_categories = {
 class TurningObstacleScenario(DrivingScenario):
 	def __init__(self):
 		super().__init__(3)
+		self._enemy_vehicle = None
+		self._enemy_mode = ""
 
 	def set_up_scenario_start(self, agent):
 		init_position = t_o_position[0]['start']
@@ -32,17 +40,64 @@ class TurningObstacleScenario(DrivingScenario):
 		for position in t_o_position:
 			if self._scenario_done:
 				break
-			self.change_next_position(position['start'], 0)
+			self.change_next_position(position, 0)
+			time.sleep(2)
 			self._level_done = False
 			# run the detect thread
 			self.run_instance(position)
+			time.sleep(2)
 		self._scenario_done = True
+
+	def change_next_position(self, position, mode):
+		super().change_next_position(position['start'], mode)
+		enemy_vehicle_map = position['enemy_vehicle']
+		if enemy_vehicle_map is None or enemy_vehicle_map['start'] is None:
+			self._enemy_vehicle = None
+			self._enemy_mode = ""
+			return
+		enemy_position = enemy_vehicle_map['start']
+		enemy_vehicle_location = carla.Location(x = enemy_position['x'], y = enemy_position['y'], z = enemy_position['z'])
+		enemy_vehicle_rotation = carla.Rotation(pitch = enemy_position['pitch'], yaw = enemy_position['yaw'], roll = enemy_position['roll'])
+		self._enemy_vehicle = Scenario._carla_env.spawn_new_actor(actor_blueprint_categories['car2'], enemy_vehicle_location, enemy_vehicle_rotation, False)
+		if self._enemy_vehicle is None:
+			print("Error Spawn Position")
+			return
+		self._enemy_mode = enemy_vehicle_map['mode']
+
 
 	def run_instance(self, position):
 		follow_thread = Thread(target = self.follow_ego_vehicle, args = (position['start']['yaw'],))
 		turning_driving_thread = Thread(target = self.ego_driving, args = (position['destination'],))
+		enemy_vehicle_thread = Thread(target = self.enemy_vehicle_operation)
 		self.start_thread(follow_thread)
+		self.start_thread(enemy_vehicle_thread)
 		self.start_thread(turning_driving_thread)
-
+		enemy_vehicle_thread.join()
 		follow_thread.join()
 		turning_driving_thread.join()
+
+	def enemy_vehicle_operation(self):
+		if self._enemy_vehicle is None:
+			return
+		if self._enemy_mode == "":
+			return
+		tick = 0.5
+		stop_time = 0
+		while True:	
+			if self._scenario_done:
+				break
+			if self._enemy_mode == "Stop":
+				stop_time += tick
+				time.sleep(tick)
+				if stop_time > 20:
+					for i in range(10):
+						self._enemy_vehicle.apply_control(carla.VehicleControl(throttle=1, steer=0.0))
+						time.sleep(1)
+					break
+
+			if self._enemy_mode == "Fast":
+				break
+
+		self._enemy_vehicle.destroy()
+		self._enemy_vehicle = None
+		self._enemy_mode = ""

@@ -73,7 +73,7 @@ class EgoVehicle(object):
 		self.__vehicle.apply_control(carla.VehicleControl(throttle=0.0, steer=0.0))
 
 	def stop(self):
-		self.__vehicle.apply_control(carla.VehicleControl(hand_brake = True))
+		self.__vehicle.apply_control(carla.VehicleControl(throttle=0.0, steer=0.0, hand_brake = True))
 
 
 	def stop_agent(self):

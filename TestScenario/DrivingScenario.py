@@ -3,6 +3,8 @@ import time
 from threading import Thread, Lock
 from TestScenario.BaseScenario import Scenario
 
+import carla
+
 class DrivingScenario(Scenario):
 	def __init__(self, town_id):
 		super().__init__(town_id)
@@ -28,8 +30,8 @@ class DrivingScenario(Scenario):
 			control = self._agent.run_step(input_data)
 			self._physical_vehicle.apply_control(control)
 			if self._agent.done():
+				self._physical_vehicle.apply_control(carla.VehicleControl(throttle=0.0, steer=0.0, brake = 1.0))
 				print("done!")
-				time.sleep(2)
 				break
 		self._level_done = True
 
