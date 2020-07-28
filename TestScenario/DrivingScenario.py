@@ -31,7 +31,15 @@ class DrivingScenario(Scenario):
 			self._physical_vehicle.apply_control(control)
 			if self._agent.done():
 				self._physical_vehicle.apply_control(carla.VehicleControl(throttle=0.0, steer=0.0, brake = 1.0))
-				print("done!")
 				break
 		self._level_done = True
 
+	def get_distance(self, ego_v, enemy_e):
+		leading_x = enemy_e.get_location().x
+		ego_x = ego_v.get_location().x
+		leading_y = enemy_e.get_location().y
+		ego_y = ego_v.get_location().y
+		distance_x = abs(leading_x - ego_x)
+		distance_y = abs(leading_y - ego_y)
+		distance = (distance_x ** 2 + distance_y ** 2) ** 0.5
+		return distance
