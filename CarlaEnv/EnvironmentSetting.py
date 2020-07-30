@@ -50,8 +50,13 @@ class CarlaEnvironment(object):
 			spectator.set_transform(carla.Transform(transform.location + carla.Location(z = height), \
 			carla.Rotation(pitch=-90, yaw = a_yaw)))
 		elif mode == 1:
-			spectator.set_transform(carla.Transform(transform.location + carla.Location(x = 8, y = -3, z = 3), \
-			carla.Rotation(yaw = 160)))
+			offset = carla.Location()
+			if a_yaw == 180:
+				offset = carla.Location(x = 8, y = -3, z = 3)
+			elif a_yaw == 0:
+				offset = carla.Location(x = -8, y = 3, z = 3)
+			spectator.set_transform(carla.Transform(transform.location + offset, \
+			carla.Rotation(yaw = a_yaw)))
 
 	def set_traffic_light(self, vehicle, color):
 		if vehicle.is_at_traffic_light():
@@ -68,7 +73,7 @@ class CarlaEnvironment(object):
 		print(town_str)
 		CarlaEnvironment._client.load_world(town_str)
 
-	def spawn_new_actor(self, bp_str, location, rotation = None, stop = True):
+	def spawn_new_actor(self, bp_str, location, rotation = None, stop = False):
 		t_transform = None
 		if rotation is None:
 			t_transform = carla.Transform(location, carla.Rotation())

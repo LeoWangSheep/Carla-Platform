@@ -75,7 +75,7 @@ class Scenario(object):
 		print("setting up ego vehicle...")
 		time.sleep(2)
 		if mode == 1:
-			Scenario._carla_env.follow_actor(self._physical_vehicle, mode = 1)
+			Scenario._carla_env.follow_actor(self._physical_vehicle, mode = 1, a_yaw = position['yaw'])
 		elif mode == 0:
 			Scenario._carla_env.follow_actor(self._physical_vehicle, mode = 0, a_yaw = position['yaw'])
 
