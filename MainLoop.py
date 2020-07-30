@@ -25,20 +25,20 @@ def main_loop():
 		'''
 		
 		# test object detect scenario
-		
+		'''
 		scenario = ObjectDetectScenario()
 		my_agent = DetectAgent()
 		scenario.set_up_scenario_start(my_agent)
 		scenario.run_scenario()
-		
+		'''
 
 		# test leading vehicle scenario
-		'''
+		
 		scenario = LeadingVehicleScenario()
 		my_agent = CarlaAutoAgent.AutoAgent()
 		scenario.set_up_scenario_start(my_agent)
 		scenario.run_scenario()
-		'''
+		
 
 		# test turning obstacle scenario
 		'''
