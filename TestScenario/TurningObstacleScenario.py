@@ -28,8 +28,8 @@ actor_blueprint_categories = {
 		}
 
 class TurningObstacleScenario(DrivingScenario):
-	def __init__(self):
-		super().__init__(3)
+	def __init__(self, weather = None):
+		super().__init__(3, weather)
 		self._enemy_vehicle = None
 		self._enemy_mode = ""
 

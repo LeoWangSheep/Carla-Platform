@@ -8,13 +8,20 @@ class CarlaEnvironment(object):
 	_map = None
 	_client = None
 	_blueprint_library = None
+	_weather = None
 
-	def __init__(self, town_id = 3,  _host = 'localhost', _port = 2000, _expired_time = 90.0):
+	def __init__(self, town_id = 3,  _host = 'localhost', _port = 2000, _expired_time = 90.0, weather = None):
 		CarlaEnvironment._client = carla.Client(_host, _port)
 		CarlaEnvironment._client.set_timeout(_expired_time)
 		town_str = 'Town0' + str(town_id)
 		CarlaEnvironment._world = CarlaEnvironment._client.get_world()
 		# self.__world = self.__client.load_world(town_str)
+		if weather != None:
+			CarlaEnvironment.set_weather(weather)
+		else:
+			CarlaEnvironment._weather = carla.WeatherParameters()
+			CarlaEnvironment._world.set_weather(CarlaEnvironment._weather)
+
 		CarlaEnvironment._blueprint_library = CarlaEnvironment._world.get_blueprint_library()
 		self.__actor_list = []
 		CarlaEnvironment.prepare_map()
@@ -84,6 +91,20 @@ class CarlaEnvironment(object):
 		if spawn_rst is not None and stop:
 			spawn_rst.set_simulate_physics(False)
 		return spawn_rst
+
+	@staticmethod
+	def set_weather(weather_arg):
+		CarlaEnvironment._weather = carla.WeatherParameters(precipitation = 80.0)
+		CarlaEnvironment._weather.cloudiness = weather_arg.clouds
+		# CarlaEnvironment._weather.precipitation = weather_arg.rain
+		CarlaEnvironment._weather.precipitation_deposits = weather_arg.puddles
+		CarlaEnvironment._weather.wind_intensity = weather_arg.wind
+		CarlaEnvironment._weather.fog_density = weather_arg.fog
+		CarlaEnvironment._weather.wetness = weather_arg.wetness
+		CarlaEnvironment._weather.sun_azimuth_angle = weather_arg.azimuth
+		CarlaEnvironment._weather.sun_altitude_angle = weather_arg.altitude
+		CarlaEnvironment._world.set_weather(CarlaEnvironment._weather)
+
 
 	@staticmethod
 	def prepare_map():

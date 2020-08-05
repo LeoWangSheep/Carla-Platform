@@ -10,14 +10,14 @@ import carla
 
 class Scenario(object):
 	_carla_env = None
-	def __init__(self, town_id):
+	def __init__(self, town_id, weather = None):
 		pygame.display.init()
 		'''
 		The _scenario_done flag can be used to decide that the scenario should be stopped
 		All the thread in this scenarios should stop when this flag is set to True 
 		'''
 		self._scenario_done = False
-		Scenario._carla_env = CarlaEnvironment(town_id)
+		Scenario._carla_env = CarlaEnvironment(town_id, weather = weather)
 		self._my_ego_vehicle = EgoVehicle(Scenario._carla_env)
 
 

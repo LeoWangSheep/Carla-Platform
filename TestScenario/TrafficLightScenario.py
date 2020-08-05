@@ -14,13 +14,14 @@ Traffic light position list
 containing map which has the variable needed to locate a position
 '''
 t_l_position = [{ 'x' : 69, 'y' : -133, 'z' : 9, 'pitch' : 0, 'yaw' : 0, 'roll' : 0, 'id' : 1}, 
-				{ 'x' : 140, 'y' : -194, 'z' : 1, 'pitch' : 0, 'yaw' : 0, 'roll' : 0, 'id' : 2},
-				{ 'x' : 97, 'y' : -136, 'z' : 10, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 3},
-				{ 'x' : 11, 'y' : -182, 'z' : 5, 'pitch' : 0, 'yaw' : -90, 'roll' : 0, 'id' : 4}]
+				# { 'x' : 140, 'y' : -194, 'z' : 1, 'pitch' : 0, 'yaw' : 0, 'roll' : 0, 'id' : 2},
+				# { 'x' : 97, 'y' : -136, 'z' : 10, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 3},
+				# { 'x' : 11, 'y' : -182, 'z' : 5, 'pitch' : 0, 'yaw' : -90, 'roll' : 0, 'id' : 4}
+				]
 
 class TrafficLightScenario(Scenario):
-	def __init__(self):
-		super().__init__(3)
+	def __init__(self, weather = None):
+		super().__init__(3, weather)
 		self._level_done = False
 
 	def set_up_scenario_start(self, agent):

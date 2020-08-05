@@ -10,19 +10,26 @@ from DrivingAgent import CarlaAutoAgent
 
 from CarlaEnv.EnvironmentSetting import CarlaEnvironment
 from CarlaEnv.EgoVehicle import EgoVehicle
+from CarlaEnv.CarlaWeather import Weather
 
 
 
 def main_loop():
 	try:
+		# set weather
+		
+		weather_mode = {}
+		weather_mode["time_str"] = "Night"
+		weather_mode["weather"] = "Rainy"
+		carla_weather = Weather(mode = weather_mode)
 		
 		# test traffic light scenario
-		'''
-		scenario = TrafficLightScenario()
+		
+		scenario = TrafficLightScenario(weather = carla_weather)
 		my_agent = DetectAgent()
 		scenario.set_up_scenario_start(my_agent)
 		scenario.run_scenario()
-		'''
+		
 		
 		# test object detect scenario
 		'''
@@ -33,12 +40,12 @@ def main_loop():
 		'''
 
 		# test leading vehicle scenario
-		
+		'''
 		scenario = LeadingVehicleScenario()
 		my_agent = CarlaAutoAgent.AutoAgent()
 		scenario.set_up_scenario_start(my_agent)
 		scenario.run_scenario()
-		
+		'''
 
 		# test turning obstacle scenario
 		'''

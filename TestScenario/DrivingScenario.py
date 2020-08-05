@@ -6,8 +6,8 @@ from TestScenario.BaseScenario import Scenario
 import carla
 
 class DrivingScenario(Scenario):
-	def __init__(self, town_id):
-		super().__init__(town_id)
+	def __init__(self, town_id, weather = None):
+		super().__init__(town_id, weather)
 		self._level_done = False
 
 	def follow_ego_vehicle(self, ego_yaw):

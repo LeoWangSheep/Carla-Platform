@@ -34,8 +34,8 @@ actor_blueprint_categories = {
 
 
 class ObjectDetectScenario(Scenario):
-	def __init__(self):
-		super().__init__(3)
+	def __init__(self, weather = None):
+		super().__init__(3, weather)
 		self._level_done = False
 
 	def set_up_scenario_start(self, agent):
