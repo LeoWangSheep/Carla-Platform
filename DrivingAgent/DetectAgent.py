@@ -21,6 +21,7 @@ class DetectAgent(Agent):
 		pass
 
 	def done(self):
+		print("done!!")
 		pass
 
 	def detect(self, input_data):

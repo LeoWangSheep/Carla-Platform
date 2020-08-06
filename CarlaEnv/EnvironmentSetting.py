@@ -94,9 +94,9 @@ class CarlaEnvironment(object):
 
 	@staticmethod
 	def set_weather(weather_arg):
-		CarlaEnvironment._weather = carla.WeatherParameters(precipitation = 80.0)
+		CarlaEnvironment._weather = carla.WeatherParameters()
 		CarlaEnvironment._weather.cloudiness = weather_arg.clouds
-		# CarlaEnvironment._weather.precipitation = weather_arg.rain
+		CarlaEnvironment._weather.precipitation = weather_arg.rain
 		CarlaEnvironment._weather.precipitation_deposits = weather_arg.puddles
 		CarlaEnvironment._weather.wind_intensity = weather_arg.wind
 		CarlaEnvironment._weather.fog_density = weather_arg.fog
@@ -104,6 +104,7 @@ class CarlaEnvironment(object):
 		CarlaEnvironment._weather.sun_azimuth_angle = weather_arg.azimuth
 		CarlaEnvironment._weather.sun_altitude_angle = weather_arg.altitude
 		CarlaEnvironment._world.set_weather(CarlaEnvironment._weather)
+		print(CarlaEnvironment._world.get_weather())
 
 
 	@staticmethod

@@ -17,11 +17,32 @@ from CarlaEnv.CarlaWeather import Weather
 def main_loop():
 	try:
 		# set weather
+		weather_mode = None
+		weather_config = None
+		use_config = True # The switch for weather configuration
+		use_mode = False # The switch for pre-configure weather mode
+		if use_mode:
+			weather_mode = {}
+			# time_str
+			# possible value: Noon, Sunset, Night, Sunrise
+			weather_mode["time_str"] = "Noon"
+			# weather
+			# possible value: Clear, Rainy, Fog, Wind
+			weather_mode["weather"] = "Wind"
+
+		if use_config:
+			weather_config = {}
+			weather_config['clouds'] = 20
+			weather_config['rain'] = 0
+			weather_config['puddles'] = 0
+			weather_config['wind'] = 10
+			weather_config['fog'] = 0
+			weather_config['wetness'] = 0
+			weather_config['azimuth'] = 0
+			weather_config['altitude'] = 45
 		
-		weather_mode = {}
-		weather_mode["time_str"] = "Night"
-		weather_mode["weather"] = "Rainy"
-		carla_weather = Weather(mode = weather_mode)
+
+		carla_weather = Weather(mode = weather_mode, weather_config = weather_config)
 		
 		# test traffic light scenario
 		
