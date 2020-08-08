@@ -13,13 +13,13 @@ class Weather:
 	def __init__(self, mode = None, weather_config = None):
 		if mode != None:
 			if "time_str" in mode.keys():
-				print("setting time...")
+				# print("setting time...")
 				Weather.set_time_frame(mode["time_str"])
 			if "weather" in mode.keys():
-				print("setting weather...")
+				# print("setting weather...")
 				Weather.set_weather_scenario(mode["weather"])
 		if weather_config != None:
-			print("configure weather...")
+			# print("configure weather...")
 			Weather.configure_weather(weather_config)
 
 	@staticmethod

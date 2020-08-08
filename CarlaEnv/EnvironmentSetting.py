@@ -92,6 +92,24 @@ class CarlaEnvironment(object):
 			spawn_rst.set_simulate_physics(False)
 		return spawn_rst
 
+	def spawn_dangerous_walker(self, location, rotation = None):
+		percentagePedestriansCrossing = 1
+		walker_controller_bp = CarlaEnvironment._world.get_blueprint_library().find('controller.ai.walker')
+		print(walker_controller_bp)
+		walker = self.spawn_new_actor(bp_str = 'walker.pedestrian.0001',
+									  location = location,
+									  rotation = rotation)
+		CarlaEnvironment._world.set_pedestrians_cross_factor(percentagePedestriansCrossing)
+		ai_controller = None
+		if walker is not None:
+			walker_controller_bp = CarlaEnvironment._blueprint_library.find('controller.ai.walker')
+			ai_controller = CarlaEnvironment._world.try_spawn_actor(walker_controller_bp, carla.Transform(), walker)
+			print(ai_controller)
+		# print(walker)
+		# print(location)
+		# print(rotation)
+		return walker, ai_controller
+
 	@staticmethod
 	def set_weather(weather_arg):
 		CarlaEnvironment._weather = carla.WeatherParameters()
@@ -104,7 +122,7 @@ class CarlaEnvironment(object):
 		CarlaEnvironment._weather.sun_azimuth_angle = weather_arg.azimuth
 		CarlaEnvironment._weather.sun_altitude_angle = weather_arg.altitude
 		CarlaEnvironment._world.set_weather(CarlaEnvironment._weather)
-		print(CarlaEnvironment._world.get_weather())
+		# print(CarlaEnvironment._world.get_weather())
 
 
 	@staticmethod

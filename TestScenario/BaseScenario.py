@@ -19,6 +19,7 @@ class Scenario(object):
 		self._scenario_done = False
 		Scenario._carla_env = CarlaEnvironment(town_id, weather = weather)
 		self._my_ego_vehicle = EgoVehicle(Scenario._carla_env)
+		self.tmp_actor = []
 
 
 	def set_up_scenario_start(self, agent, position):
@@ -78,4 +79,9 @@ class Scenario(object):
 			Scenario._carla_env.follow_actor(self._physical_vehicle, mode = 1, a_yaw = position['yaw'])
 		elif mode == 0:
 			Scenario._carla_env.follow_actor(self._physical_vehicle, mode = 0, a_yaw = position['yaw'])
+
+	def release_tmp_actor(self):
+		for actor in self.tmp_actor:
+			if actor is not None:
+				actor.destroy()
 

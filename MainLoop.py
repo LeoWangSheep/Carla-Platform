@@ -4,6 +4,7 @@ from TestScenario.TrafficLightScenario import TrafficLightScenario
 from TestScenario.ObjectDetectScenario import ObjectDetectScenario
 from TestScenario.LeadingVehicleScenario import LeadingVehicleScenario
 from TestScenario.TurningObstacleScenario import TurningObstacleScenario
+from TestScenario.BlindPointScenario import BlindPointScenario
 
 from DrivingAgent.DetectAgent import DetectAgent
 from DrivingAgent import CarlaAutoAgent
@@ -29,8 +30,7 @@ def main_loop():
 			# weather
 			# possible value: Clear, Rainy, Fog, Wind
 			weather_mode["weather"] = "Wind"
-
-		if use_config:
+		elif use_config:
 			weather_config = {}
 			weather_config['clouds'] = 20
 			weather_config['rain'] = 0
@@ -39,18 +39,18 @@ def main_loop():
 			weather_config['fog'] = 0
 			weather_config['wetness'] = 0
 			weather_config['azimuth'] = 0
-			weather_config['altitude'] = 45
+			weather_config['altitude'] = 90
 		
 
 		carla_weather = Weather(mode = weather_mode, weather_config = weather_config)
 		
 		# test traffic light scenario
-		
+		'''
 		scenario = TrafficLightScenario(weather = carla_weather)
 		my_agent = DetectAgent()
 		scenario.set_up_scenario_start(my_agent)
 		scenario.run_scenario()
-		
+		'''
 		
 		# test object detect scenario
 		'''
@@ -76,6 +76,13 @@ def main_loop():
 		scenario.run_scenario()
 		'''
 
+		# test blind point scenario
+		
+		scenario = BlindPointScenario(weather = carla_weather)
+		my_agent = CarlaAutoAgent.AutoAgent()
+		scenario.set_up_scenario_start(my_agent)
+		scenario.run_scenario()
+		
 		
 		# find spawn point
 		'''
