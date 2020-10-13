@@ -12,6 +12,6 @@ STEP 4 modify the ./DrivingAgent/DetectAgent.py 's detect function, then you can
 
 STEP 5 run CarlaUE4.exe (Windows) / CarlaUE4.sh (Linux) (KEEP RUNNING) 
 
-STEP 6 run MainLoop.py
+STEP 6 run message_send.py (The parameters and contents can be set in that file)
 
 If you want to exit during operation, please press Ctrl + C

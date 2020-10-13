@@ -59,4 +59,4 @@ if __name__ == '__main__':
                                  agent_name='DetectAgent'
                                  )
 
-    MainLoop.main_loop(message_1)
+    MainLoop.main_loop(message_2)

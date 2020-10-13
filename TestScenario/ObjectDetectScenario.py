@@ -3,6 +3,7 @@ import random
 import operator
 from threading import Thread, Lock
 from TestScenario.BaseScenario import Scenario
+from Marking.MarkingScore import Marking
 from CarlaEnv.EnvironmentSetting import CarlaEnvironment
 from CarlaEnv.EgoVehicle import EgoVehicle
 from DrivingAgent import CarlaAutoAgent
@@ -43,6 +44,8 @@ class ObjectDetectScenario(Scenario):
 		self.time_out = False
 		init_position = o_d_position[0]['location']
 		super().set_up_scenario_start(agent, init_position)
+		self.marking_tool = Marking(mode='detect')
+
 
 	def run_scenario(self):
 		for position in o_d_position:
@@ -55,6 +58,8 @@ class ObjectDetectScenario(Scenario):
 			# run the detect thread
 			self.run_instance(position)
 		self._scenario_done = True
+		accuracy, avg_time, mark = self.marking_tool.detect_result()
+		print('Accuracy: ', accuracy, "%, Average Time: ", avg_time, ", Mark: ", mark)
 
 	def change_next_position(self, position):
 		print("Scenario: " , position['description'])
@@ -89,6 +94,7 @@ class ObjectDetectScenario(Scenario):
 		end_time = time.time()
 		print("Detect Result: ", detect_result, ", Actual Result: ", self._correct_answer)
 		duration = end_time - start_time
+		self.marking_tool.detect_marking(detecteds=detect_result, targets=self._correct_answer, cost_time=duration)
 		print("Detect Time Cost: ", duration, "s")
 		time.sleep(1)
 			

@@ -46,13 +46,11 @@ def main_loop(data_frame):
 			weather_config['azimuth'] = 0
 			weather_config['altitude'] = 90
 		else:
-			weather_mode = {}
 			# time_str
 			# possible value: Noon, Sunset, Night, Sunrise
-			weather_mode["time_str"] = data_frame['preset_time']
 			# weather
 			# possible value: Clear, Rainy, Fog, Wind
-			weather_mode["weather"] = data_frame['preset_weather']
+			weather_mode = {"time_str": data_frame['preset_time'], "weather": data_frame['preset_weather']}
 
 		carla_weather = Weather(mode=weather_mode, weather_config=weather_config)
 
@@ -70,6 +68,9 @@ def main_loop(data_frame):
 			scenario = TurningObstacleScenario(weather=carla_weather)
 		elif scenario_str == 'BlindPoint':
 			scenario = BlindPointScenario(weather=carla_weather)
+
+		if scenario is None:
+			raise Exception("Wrong Name of Scenario, please check: ", scenario_str)
 
 		agent_class = get_agent(data_frame['agent_path'], data_frame['agent_name'])
 		my_agent = agent_class()

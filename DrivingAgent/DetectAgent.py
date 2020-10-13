@@ -34,6 +34,7 @@ class DetectAgent(Agent):
 		The order of your results in the list should follow the order of the entities in the image from left to right
 		'''
 		detect_result = ['car']
+		# detect_result = ['Red']
 		front_camera = input_data['Center']['data']
 		# print(front_camera)
 		'''
