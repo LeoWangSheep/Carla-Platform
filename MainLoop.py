@@ -1,4 +1,7 @@
 import time
+import os
+import importlib
+import sys
 
 from TestScenario.TrafficLightScenario import TrafficLightScenario
 from TestScenario.ObjectDetectScenario import ObjectDetectScenario
@@ -14,23 +17,25 @@ from CarlaEnv.EgoVehicle import EgoVehicle
 from CarlaEnv.CarlaWeather import Weather
 
 
+def get_agent(path_str, agent_name):
+	module_name = os.path.basename(path_str).split('.')[0]
+	# print(module_name)
+	dir_path = os.path.dirname(path_str)
+	# print(dir_path)
+	sys.path.insert(0, dir_path)
+	module_agent = importlib.import_module(module_name)
+	agent_instance = getattr(module_agent, agent_name)
+	return agent_instance
 
-def main_loop():
+
+def main_loop(data_frame):
 	try:
 		# set weather
 		weather_mode = None
 		weather_config = None
-		use_config = True # The switch for weather configuration
-		use_mode = False # The switch for pre-configure weather mode
-		if use_mode:
-			weather_mode = {}
-			# time_str
-			# possible value: Noon, Sunset, Night, Sunrise
-			weather_mode["time_str"] = "Noon"
-			# weather
-			# possible value: Clear, Rainy, Fog, Wind
-			weather_mode["weather"] = "Wind"
-		elif use_config:
+		use_config = data_frame['if_custom']  # The switch for weather configuration
+
+		if use_config:
 			weather_config = {}
 			weather_config['clouds'] = 20
 			weather_config['rain'] = 0
@@ -40,10 +45,37 @@ def main_loop():
 			weather_config['wetness'] = 0
 			weather_config['azimuth'] = 0
 			weather_config['altitude'] = 90
-		
+		else:
+			weather_mode = {}
+			# time_str
+			# possible value: Noon, Sunset, Night, Sunrise
+			weather_mode["time_str"] = data_frame['preset_time']
+			# weather
+			# possible value: Clear, Rainy, Fog, Wind
+			weather_mode["weather"] = data_frame['preset_weather']
 
-		carla_weather = Weather(mode = weather_mode, weather_config = weather_config)
-		
+		carla_weather = Weather(mode=weather_mode, weather_config=weather_config)
+
+		scenario = None
+		scenario_str = data_frame['scenario']
+		# possible value: TrafficLight, TurningObstacle, LeadingVehicle,
+		# 		 		  TurningObstacle, BlindPoint
+		if scenario_str == 'TrafficLight':
+			scenario = TrafficLightScenario(weather=carla_weather)
+		elif scenario_str == 'ObjectDetect':
+			scenario = ObjectDetectScenario(weather=carla_weather)
+		elif scenario_str == 'LeadingVehicle':
+			scenario = LeadingVehicleScenario(weather=carla_weather)
+		elif scenario_str == 'TurningObstacle':
+			scenario = TurningObstacleScenario(weather=carla_weather)
+		elif scenario_str == 'BlindPoint':
+			scenario = BlindPointScenario(weather=carla_weather)
+
+		agent_class = get_agent(data_frame['agent_path'], data_frame['agent_name'])
+		my_agent = agent_class()
+		scenario.set_up_scenario_start(my_agent)
+		scenario.run_scenario()
+
 		# test traffic light scenario
 		'''
 		scenario = TrafficLightScenario(weather = carla_weather)
@@ -54,15 +86,15 @@ def main_loop():
 		
 		# test object detect scenario
 		'''
-		scenario = ObjectDetectScenario()
+		scenario = ObjectDetectScenario(weather=carla_weather)
 		my_agent = DetectAgent()
 		scenario.set_up_scenario_start(my_agent)
 		scenario.run_scenario()
 		'''
 
 		# test leading vehicle scenario
-		'''
-		scenario = LeadingVehicleScenario()
+		'''	
+		scenario = LeadingVehicleScenario(weather=carla_weather)
 		my_agent = CarlaAutoAgent.AutoAgent()
 		scenario.set_up_scenario_start(my_agent)
 		scenario.run_scenario()
@@ -70,19 +102,22 @@ def main_loop():
 
 		# test turning obstacle scenario
 		'''
-		scenario = TurningObstacleScenario()
+		scenario = TurningObstacleScenario(weather=carla_weather)
 		my_agent = CarlaAutoAgent.AutoAgent()
 		scenario.set_up_scenario_start(my_agent)
 		scenario.run_scenario()
 		'''
 
 		# test blind point scenario
-		
-		scenario = BlindPointScenario(weather = carla_weather)
-		my_agent = CarlaAutoAgent.AutoAgent()
+
+		# scenario = BlindPointScenario(weather=carla_weather)
+		# my_agent = CarlaAutoAgent.AutoAgent()
+		'''
+		agent_class = get_agent(data_frame['agent_path'], data_frame['agent_name'])
+		my_agent = agent_class()
 		scenario.set_up_scenario_start(my_agent)
 		scenario.run_scenario()
-		
+		'''
 		
 		# find spawn point
 		'''
@@ -122,5 +157,8 @@ def main_loop():
 
 		# carla_env.clean_actors()
 
+
+'''
 if __name__ == '__main__':
 	main_loop()
+'''

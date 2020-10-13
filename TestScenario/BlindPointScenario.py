@@ -98,7 +98,7 @@ class BlindPointScenario(DrivingScenario):
 			distance = self.get_distance(self._physical_vehicle, self._leading_vehicle)
 			if not trigger:
 				if control == "StraightAndWalker":
-					if distance <= 14:
+					if distance <= 27:
 						# ai walker start to walk
 						if dangerous_walker is not None:
 							direction_vec = carla.Vector3D(y = 1, x = 0, z = 0)

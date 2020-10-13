@@ -48,3 +48,6 @@ class AutoAgent(Agent):
 	def done(self):
 		return self._agent.done()
 
+	def display(self):
+		print('successfully')
+
