@@ -77,4 +77,12 @@ class Weather:
 		Weather.azimuth = weather_config['azimuth']
 		Weather.altitude = weather_config['altitude']
 
+	def get_weather_dict(self):
+		weather_dict = {'clouds': round(Weather.clouds, 2), 'rain': round(Weather.rain, 2),
+						'puddles': round(Weather.puddles, 2), 'wind': round(Weather.wind, 2),
+						'fog': round(Weather.fog, 2), 'wetness': round(Weather.wetness, 2),
+						'azimuth': round(Weather.azimuth, 2), 'altitude': round(Weather.altitude, 2)}
+		return weather_dict
+
+
 

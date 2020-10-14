@@ -37,6 +37,7 @@ actor_blueprint_categories = {
 class ObjectDetectScenario(Scenario):
 	def __init__(self, weather=None):
 		super().__init__(3, weather)
+		self.info_dataframe['Scenario'] = 'Object Detection'
 		self._level_done = False
 
 	def set_up_scenario_start(self, agent):
@@ -58,8 +59,12 @@ class ObjectDetectScenario(Scenario):
 			# run the detect thread
 			self.run_instance(position)
 		self._scenario_done = True
-		accuracy, avg_time, mark = self.marking_tool.detect_result()
-		print('Accuracy: ', accuracy, "%, Average Time: ", avg_time, "s, Mark: ", mark)
+		accuracy, avg_time, mark, detects, answers = self.marking_tool.detect_result()
+		self.info_dataframe['accuracy'] = accuracy
+		self.info_dataframe['avg_time'] = avg_time
+		self.info_dataframe['mark'] = mark
+		self.info_dataframe['detects'] = detects
+		self.info_dataframe['answers'] = answers
 
 	def change_next_position(self, position):
 		print("Scenario: " , position['description'])

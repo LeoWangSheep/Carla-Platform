@@ -53,7 +53,7 @@ if __name__ == '__main__':
                                  custom_wind=None,
                                  custom_fog=None,
                                  custom_air_humidity=None,
-                                 scenario='ObjectDetect',
+                                 scenario='TrafficLight',
                                  # possible value : TrafficLight, ObjectDetect, LeadingVehicle,
                                  # 				   TurningObstacle, BlindPoint
                                  agent_name='DetectAgent'

@@ -165,11 +165,22 @@ def yolo_detect(input_img,
 
     #====  Traffic Light Output ====
     if(detect_mode =="light"):
-        light_color = get_color(const_img, 
+        color_list = []
+        if(len(light_axis_x)!=0):#No object detected
+            light_color = get_color(const_img, 
                         light_axis_x[mid_light], light_axis_y[mid_light], 
                         light_axis_h[mid_light], light_axis_w[mid_light])
-        color_list = []
-        color_list.append(light_color)
+            color_list.append(light_color)
+        # Output Image
+        base_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+        #Use Time as filename
+        now = time.strftime("%Y-%m-%d(%H_%M_%S)",time.localtime(time.time()))
+        #If dir not exist, create it
+        if os.path.exists(base_path + '\\DrivingAgent\\Detect\\Light_Images')==False:
+            os.mkdir(base_path + '\\DrivingAgent\\Detect\\Light_Images')
+        output_filename = base_path + '\\DrivingAgent\\Detect\\Light_Images\\' + now +'.jpg'
+        #Save image
+        cv2.imwrite(output_filename, img, [int(cv2.IMWRITE_JPEG_QUALITY), jpg_quality])
         return color_list
 
     #====  Obejct Detect Output ====

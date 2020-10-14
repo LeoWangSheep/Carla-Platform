@@ -21,6 +21,7 @@ actor_blueprint_categories = {
 class BlindPointScenario(DrivingScenario):
 	def __init__(self, weather = None):
 		super().__init__(3, weather)
+		self.info_dataframe['Scenario'] = 'Blind Point'
 
 	def set_up_scenario_start(self, agent):
 		init_position = b_p_position[0]['start']

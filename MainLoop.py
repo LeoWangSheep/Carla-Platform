@@ -77,6 +77,11 @@ def main_loop(data_frame):
 		scenario.set_up_scenario_start(my_agent)
 		scenario.run_scenario()
 
+		record_data = scenario.get_data_frame()
+		record_data['agent_path'] = data_frame['agent_path']
+		record_data['agent_name'] = data_frame['agent_name']
+		print(record_data)
+
 		# test traffic light scenario
 		'''
 		scenario = TrafficLightScenario(weather = carla_weather)

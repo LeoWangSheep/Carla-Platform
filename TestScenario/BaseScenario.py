@@ -20,6 +20,11 @@ class Scenario(object):
 		Scenario._carla_env = CarlaEnvironment(town_id, weather = weather)
 		self._my_ego_vehicle = EgoVehicle(Scenario._carla_env)
 		self.tmp_actor = []
+		self.info_dataframe = {}
+		if weather is not None:
+			self.info_dataframe = weather.get_weather_dict()
+		self.info_dataframe['time_stamp'] = time.time()
+		self.info_dataframe['date_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
 
 	def set_up_scenario_start(self, agent, position):
@@ -84,4 +89,7 @@ class Scenario(object):
 		for actor in self.tmp_actor:
 			if actor is not None:
 				actor.destroy()
+
+	def get_data_frame(self):
+		return self.info_dataframe
 

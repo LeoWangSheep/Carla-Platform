@@ -29,6 +29,7 @@ actor_blueprint_categories = {
 class LeadingVehicleScenario(DrivingScenario):
 	def __init__(self, weather = None):
 		super().__init__(3, weather)
+		self.info_dataframe['Scenario'] = 'Leading Vehicle'
 
 	def set_up_scenario_start(self, agent):
 		init_position = l_v_position[0]['start']

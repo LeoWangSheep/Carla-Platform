@@ -8,7 +8,7 @@ class DetectAgent(Agent):
 
 	def initial_sensor(self):
 		sensors = [
-			{'type': 'sensor.camera.rgb', 'x': 1.5, 'y': 0.0, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
+			{'type': 'sensor.camera.rgb', 'x': 8, 'y': 0.0, 'z': 1.60, 'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
  			'width': 1024, 'height': 768, 'fov': 110, 'id': 'Center'}
 		]
 		#Recommend Resolution:[800*600] [1024*768] [1280*1024] [1440*900] [1680*1050] [1980*1080]
@@ -37,7 +37,7 @@ class DetectAgent(Agent):
 		front_camera = input_data['Center']['data']
 
 		detect_mode = "light"
-		detect_mode = "Obj"
+		# detect_mode = "Obj"
 		detect_result = yolo_detect(front_camera, detect_mode = detect_mode)
 
 		'''

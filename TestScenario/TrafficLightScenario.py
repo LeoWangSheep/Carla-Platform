@@ -16,13 +16,14 @@ containing map which has the variable needed to locate a position
 '''
 t_l_position = [{ 'x' : 69, 'y' : -133, 'z' : 9, 'pitch' : 0, 'yaw' : 0, 'roll' : 0, 'id' : 1}, 
 				{ 'x' : 140, 'y' : -194, 'z' : 1, 'pitch' : 0, 'yaw' : 0, 'roll' : 0, 'id' : 2},
-				# { 'x' : 97, 'y' : -136, 'z' : 10, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 3},
-				# { 'x' : 11, 'y' : -182, 'z' : 5, 'pitch' : 0, 'yaw' : -90, 'roll' : 0, 'id' : 4}
+				{ 'x' : 97, 'y' : -136, 'z' : 10, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 3},
+				{ 'x' : 11, 'y' : -182, 'z' : 5, 'pitch' : 0, 'yaw' : -90, 'roll' : 0, 'id' : 4}
 				]
 
 class TrafficLightScenario(Scenario):
 	def __init__(self, weather = None):
 		super().__init__(3, weather)
+		self.info_dataframe['Scenario'] = 'Traffic Light Detection'
 		self._level_done = False
 
 	def set_up_scenario_start(self, agent):
@@ -43,8 +44,12 @@ class TrafficLightScenario(Scenario):
 			# run the detect thread
 			self.run_instance()
 		self._scenario_done = True
-		accuracy, avg_time, mark = self.marking_tool.detect_result()
-		print('Accuracy: ', accuracy, "%, Average Time: ", avg_time, "s, Mark: ", mark)
+		accuracy, avg_time, mark, detects, answers = self.marking_tool.detect_result()
+		self.info_dataframe['accuracy'] = accuracy
+		self.info_dataframe['avg_time'] = avg_time
+		self.info_dataframe['mark'] = mark
+		self.info_dataframe['detects'] = detects
+		self.info_dataframe['answers'] = answers
 
 	def change_next_position(self, position):
 		print("Get to next Traffic light position...: Position" , position['id'])
@@ -90,14 +95,14 @@ class TrafficLightScenario(Scenario):
 		while True:
 			if self._scenario_done:
 				break
+			self._traffic_light_lock.acquire()
 			input_data = self._sensor_list.get_data()
 			start_time = time.time()
-			self._traffic_light_lock.acquire()
 			self._correct_answer = self.get_actual_traffic_state()
-			self._traffic_light_lock.release()
 			detect_result = self._agent.detect(input_data)
 			end_time = time.time()
 			print("Detect Result: " , detect_result, " : Actual Result: " , self._correct_answer)
+			self._traffic_light_lock.release()
 			duration = end_time - start_time
 			self.marking_tool.detect_marking(detecteds=detect_result, targets=self._correct_answer, cost_time=duration)
 			time.sleep(1)
