@@ -59,7 +59,7 @@ class ObjectDetectScenario(Scenario):
 			self.run_instance(position)
 		self._scenario_done = True
 		accuracy, avg_time, mark = self.marking_tool.detect_result()
-		print('Accuracy: ', accuracy, "%, Average Time: ", avg_time, ", Mark: ", mark)
+		print('Accuracy: ', accuracy, "%, Average Time: ", avg_time, "s, Mark: ", mark)
 
 	def change_next_position(self, position):
 		print("Scenario: " , position['description'])

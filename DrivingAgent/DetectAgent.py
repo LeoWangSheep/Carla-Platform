@@ -33,8 +33,8 @@ class DetectAgent(Agent):
 		In object detect scenario, the possible answers are: car, truck, bus, motorbike, bicycle, pedestrian
 		The order of your results in the list should follow the order of the entities in the image from left to right
 		'''
-		detect_result = ['car']
-		# detect_result = ['Red']
+		# detect_result = ['car']
+		detect_result = ['Red']
 		front_camera = input_data['Center']['data']
 		# print(front_camera)
 		'''

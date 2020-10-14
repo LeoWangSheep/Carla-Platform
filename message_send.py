@@ -27,7 +27,7 @@ def DictConstruction(agent_path,
 
 
 if __name__ == '__main__':
-    message_1 = DictConstruction(agent_path='D:/992_Project/Carla-Platform-master/DrivingAgent/CarlaAutoAgent.py',
+    message_1 = DictConstruction(agent_path='D:/992_Project/Carla-Platform/DrivingAgent/CarlaAutoAgent.py',
                                  if_custom=False,
                                  preset_time='Noon',  # possible value: Noon, Sunset, Night, Sunrise
                                  preset_weather='Wind',  # possible value: Clear, Rainy, Fog, Wind
@@ -43,9 +43,9 @@ if __name__ == '__main__':
                                  agent_name='AutoAgent'
                                  )
 
-    message_2 = DictConstruction(agent_path='D:/992_Project/Carla-Platform-master/DrivingAgent/DetectAgent.py',
+    message_2 = DictConstruction(agent_path='D:/992_Project/Carla-Platform/DrivingAgent/DetectAgent_1.py',
                                  if_custom=False,
-                                 preset_time='Sunrise',  # possible value: Noon, Sunset, Night, Sunrise
+                                 preset_time='Noon',  # possible value: Noon, Sunset, Night, Sunrise
                                  preset_weather='Clear',  # possible value: Clear, Rainy, Fog, Wind
                                  custom_time=None,
                                  custom_rainfall=None,
