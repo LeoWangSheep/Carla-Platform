@@ -15,10 +15,10 @@ class DetectAgent(Agent):
 		return sensors 
 
 	def set_destination(self, target_waypoint):
-		pass
+		raise Exception("The detect agent don't have set_destination function")
 
 	def run_step(self, input_data = {}, debug = False):
-		pass
+		raise Exception("The detect agent don't have run step function")
 
 	def done(self):
 		pass

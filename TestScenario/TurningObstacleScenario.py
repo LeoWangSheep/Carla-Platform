@@ -4,6 +4,7 @@ from threading import Thread, Lock
 from TestScenario.BaseScenario import Scenario
 from TestScenario.DrivingScenario import DrivingScenario
 
+
 import carla
 
 t_o_position = [    {'start' : { 'x' : 105, 'y' : -73, 'z' : 10, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 1},
@@ -52,6 +53,7 @@ class TurningObstacleScenario(DrivingScenario):
 			self.run_instance(position)
 			time.sleep(2)
 		self._scenario_done = True
+		self.record_score()
 
 	def change_next_position(self, position, mode):
 		print("Scenario: " , position['description'])

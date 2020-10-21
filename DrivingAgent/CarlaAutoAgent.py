@@ -51,3 +51,6 @@ class AutoAgent(Agent):
 	def display(self):
 		print('successfully')
 
+	def detect(self, input_data):
+		raise Exception("The auto driving agent don't have detect function")
+

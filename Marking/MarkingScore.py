@@ -58,6 +58,28 @@ class Marking:
         print('Accuracy: ', accuracy, "%, Average Time: ", average_cost_time, "s, Mark: ", final_mark)
         return accuracy, average_cost_time, final_mark, self.detect_str, self.answer_str
 
+    def driving_result(self, collision_times, is_arrive, close_times):
+        base_mark = 0
+        if is_arrive is True:
+            base_mark = 40
 
+        colli_mark = 0
+        if collision_times == 0:
+            colli_mark = 30
+        elif collision_times == 1:
+            colli_mark = 20
+        elif collision_times == 2:
+            colli_mark = 10
+
+        close_mark = 0
+        if close_times == 0:
+            close_mark = 30
+        elif 0 < close_times <= 5:
+            close_mark = 20
+        elif 5 < close_times <= 10:
+            close_mark = 10
+
+        final_mark = base_mark + colli_mark + close_mark
+        return final_mark
 
 

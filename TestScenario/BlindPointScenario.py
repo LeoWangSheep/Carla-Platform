@@ -1,4 +1,5 @@
 import time
+import random
 from threading import Thread, Lock
 from TestScenario.BaseScenario import Scenario
 from TestScenario.DrivingScenario import DrivingScenario
@@ -18,6 +19,7 @@ actor_blueprint_categories = {
 			'truck': 'vehicle.tesla.cybertruck'
 		}
 
+
 class BlindPointScenario(DrivingScenario):
 	def __init__(self, weather = None):
 		super().__init__(3, weather)
@@ -28,8 +30,6 @@ class BlindPointScenario(DrivingScenario):
 		# setting up ego vehicle
 		super().set_up_scenario_start(agent, init_position)
 		self._agent.bind_vehicle(self._physical_vehicle, target_speed = 40)
-		
-
 
 	def run_scenario(self):
 		for position in b_p_position:
@@ -40,7 +40,7 @@ class BlindPointScenario(DrivingScenario):
 			self.run_instance(position)
 			time.sleep(10)
 		self._scenario_done = True
-
+		self.record_score()
 
 	def change_next_position(self, position, mode):
 		print("Scenario: " , position['description'])

@@ -1,4 +1,5 @@
 import time
+import random
 from threading import Thread, Lock
 from TestScenario.BaseScenario import Scenario
 from TestScenario.DrivingScenario import DrivingScenario
@@ -48,6 +49,7 @@ class LeadingVehicleScenario(DrivingScenario):
 			# run the detect thread
 			self.run_instance(position)
 		self._scenario_done = True
+		self.record_score()
 
 	def change_next_position(self, position, mode):
 		print("Scenario: " , position['description'])

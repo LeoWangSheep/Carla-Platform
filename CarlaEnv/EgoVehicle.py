@@ -5,6 +5,7 @@ from CommonTool.agents.tools import misc
 import time
 from CarlaEnv import CarlaSensor
 
+
 class EgoVehicle(object):
 	def __init__(self, env):
 		self.__env = env

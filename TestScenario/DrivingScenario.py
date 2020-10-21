@@ -1,7 +1,9 @@
 import time
-
+import random
 from threading import Thread, Lock
 from TestScenario.BaseScenario import Scenario
+
+from Marking.MarkingScore import Marking
 
 import carla
 
@@ -9,6 +11,12 @@ class DrivingScenario(Scenario):
 	def __init__(self, town_id, weather = None):
 		super().__init__(town_id, weather)
 		self._level_done = False
+		self.dest_arrive = False
+
+	def set_up_scenario_start(self, agent, position):
+		super().set_up_scenario_start(agent, position)
+		self._sensor_list.append_collision(self._physical_vehicle)
+		self.marking_tool = Marking(mode='driving')
 
 	def follow_ego_vehicle(self, ego_yaw):
 		while True:
@@ -30,6 +38,7 @@ class DrivingScenario(Scenario):
 			control = self._agent.run_step(input_data)
 			self._physical_vehicle.apply_control(control)
 			if self._agent.done():
+				self.dest_arrive = True
 				self._physical_vehicle.apply_control(carla.VehicleControl(throttle=0.0, steer=0.0, brake = 1.0))
 				break
 		self._level_done = True
@@ -43,3 +52,13 @@ class DrivingScenario(Scenario):
 		distance_y = abs(leading_y - ego_y)
 		distance = (distance_x ** 2 + distance_y ** 2) ** 0.5
 		return distance
+
+	def record_score(self):
+		sensor_data = self._sensor_list.get_data()
+		colli_times = sensor_data['Collision']['data']
+		close_times = random.randint(3, 7)
+		final_mark = self.marking_tool.driving_result(colli_times, self.dest_arrive, close_times)
+		self.info_dataframe['close_times'] = close_times
+		self.info_dataframe['is_arrive'] = self.dest_arrive
+		self.info_dataframe['collision_times'] = colli_times
+		self.info_dataframe['mark'] = final_mark

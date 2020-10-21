@@ -37,7 +37,7 @@ if __name__ == '__main__':
                                  custom_wind=None,
                                  custom_fog=None,
                                  custom_air_humidity=None,
-                                 scenario='LeadingVehicle',
+                                 scenario='TurningObstacle',
                                  # possible value : TrafficLight, ObjectDetect, LeadingVehicle,
                                  # 				   TurningObstacle, BlindPoint
                                  agent_name='AutoAgent'
@@ -59,4 +59,4 @@ if __name__ == '__main__':
                                  agent_name='DetectAgent'
                                  )
 
-    MainLoop.main_loop(message_2)
+    MainLoop.main_loop(message_1)
