@@ -106,6 +106,7 @@ class RGBCamera(Sensor):
         array = np.reshape(array, (image.height, image.width, 4))
         self._sensor_data_container.update_data(self._sensor_type, array, image.frame)
         i3 = array[:, :, :3]
+        '''
         if self._panel_lock:
             self._panel_lock = False
             cv2.imshow(self._sensor_type + " Camera", i3)
@@ -113,6 +114,8 @@ class RGBCamera(Sensor):
             self._panel_lock = True
         if self._recording:
             image.save_to_disk('camera_img/%06d.png' % image.frame)
+        '''
+
 
 class LidarSensor(Sensor):
     def __init__(self, env, sensor_item, sensor_data_container):

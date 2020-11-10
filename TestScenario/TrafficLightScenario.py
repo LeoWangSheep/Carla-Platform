@@ -15,9 +15,9 @@ Traffic light position list
 containing map which has the variable needed to locate a position
 '''
 t_l_position = [{ 'x' : 69, 'y' : -133, 'z' : 9, 'pitch' : 0, 'yaw' : 0, 'roll' : 0, 'id' : 1}, 
-				{ 'x' : 140, 'y' : -194, 'z' : 1, 'pitch' : 0, 'yaw' : 0, 'roll' : 0, 'id' : 2},
-				{ 'x' : 97, 'y' : -136, 'z' : 10, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 3},
-				{ 'x' : 11, 'y' : -182, 'z' : 5, 'pitch' : 0, 'yaw' : -90, 'roll' : 0, 'id' : 4}
+				# { 'x' : 140, 'y' : -194, 'z' : 1, 'pitch' : 0, 'yaw' : 0, 'roll' : 0, 'id' : 2},
+				# { 'x' : 97, 'y' : -136, 'z' : 10, 'pitch' : 0, 'yaw' : 180, 'roll' : 0, 'id' : 3},
+				# { 'x' : 11, 'y' : -182, 'z' : 5, 'pitch' : 0, 'yaw' : -90, 'roll' : 0, 'id' : 4}
 				]
 
 class TrafficLightScenario(Scenario):
@@ -69,6 +69,8 @@ class TrafficLightScenario(Scenario):
 		self.start_thread(detect_thread)
 		traffic_thread.join()
 		detect_thread.join()
+		if self.subthread_err_msg != "":
+			raise Exception(self.subthread_err_msg)
 
 	def traffic_light_change(self):
 		tick = 1
@@ -99,12 +101,17 @@ class TrafficLightScenario(Scenario):
 			input_data = self._sensor_list.get_data()
 			start_time = time.time()
 			self._correct_answer = self.get_actual_traffic_state()
-			detect_result = self._agent.detect(input_data)
-			end_time = time.time()
-			print("Detect Result: " , detect_result, " : Actual Result: " , self._correct_answer)
-			self._traffic_light_lock.release()
-			duration = end_time - start_time
-			self.marking_tool.detect_marking(detecteds=detect_result, targets=self._correct_answer, cost_time=duration)
+			try:
+				detect_result = self._agent.detect(input_data)
+				end_time = time.time()
+				print("Detect Result: ", detect_result, " : Actual Result: ", self._correct_answer)
+				duration = end_time - start_time
+				self.marking_tool.detect_marking(detecteds=detect_result, targets=self._correct_answer, cost_time=duration)
+			except Exception as e:
+				self._scenario_done = True
+				self.subthread_err_msg = "The detect function in the agent file is not exist!"
+			finally:
+				self._traffic_light_lock.release()
 			time.sleep(1)
 			if self._level_done:
 				break

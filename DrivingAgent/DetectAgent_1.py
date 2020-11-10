@@ -2,6 +2,8 @@ from DrivingAgent.Agent import Agent
 from DrivingAgent.Detect.ColorDetect_v2 import yolo_detect
 import cv2
 # agent adapter
+
+
 class DetectAgent(Agent):
 	def __init__(self, vehicle = None, target_speed=20):
 		self._agent = None
@@ -36,8 +38,8 @@ class DetectAgent(Agent):
 		# detect_result = ['car']
 		front_camera = input_data['Center']['data']
 
-		detect_mode = "light"
-		# detect_mode = "Obj"
+		# detect_mode = "light"
+		detect_mode = "Obj"
 		detect_result = yolo_detect(front_camera, detect_mode = detect_mode)
 
 		'''

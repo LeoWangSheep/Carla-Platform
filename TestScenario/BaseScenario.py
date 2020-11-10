@@ -25,6 +25,7 @@ class Scenario(object):
 			self.info_dataframe = weather.get_weather_dict()
 		self.info_dataframe['time_stamp'] = time.time()
 		self.info_dataframe['date_time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+		self.subthread_err_msg = ""
 
 
 	def set_up_scenario_start(self, agent, position):

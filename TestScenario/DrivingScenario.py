@@ -35,7 +35,11 @@ class DrivingScenario(Scenario):
 			if self._scenario_done:
 				break
 			input_data = self._sensor_list.get_data()
-			control = self._agent.run_step(input_data)
+			try:
+				control = self._agent.run_step(input_data)
+			except Exception as e:
+				self._scenario_done = True
+				raise Exception("The Agent's run_step function has problem! Please have a check.")
 			self._physical_vehicle.apply_control(control)
 			if self._agent.done():
 				self.dest_arrive = True
@@ -62,3 +66,4 @@ class DrivingScenario(Scenario):
 		self.info_dataframe['is_arrive'] = self.dest_arrive
 		self.info_dataframe['collision_times'] = colli_times
 		self.info_dataframe['mark'] = final_mark
+

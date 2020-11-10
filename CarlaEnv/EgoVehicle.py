@@ -57,17 +57,14 @@ class EgoVehicle(object):
 	def get_vehicle(self):
 		return self.__vehicle
 
+	def bind_agent(self, agent):
+		self.__agent = agent
+
 	def drive(self):
-		#self.__vehicle.apply_control(carla.VehicleControl(throttle=1.0, steer=0.0))
 		self.__vehicle.set_autopilot(True)
 		tick = 0.05
 		all_time = 0
 		while all_time < 50:
-			# speed = misc.get_speed(self.__vehicle)
-			# print("vehicle speed: ", speed, " : time: ", all_time)
-			# ego_vehicle_location = self.__vehicle.get_location()
-			# ego_vehicle_waypoint = self.__vehicle.get_world().get_map().get_waypoint(ego_vehicle_location)
-			# driving_waypoints.append(ego_vehicle_waypoint)
 			self.__env.follow_actor(self.__vehicle)
 			time.sleep(tick)
 			all_time += tick
@@ -110,6 +107,3 @@ class EgoVehicle(object):
 				print("done!")
 				break
 		# self.__sensor_list.destroy_sensors()
-
-	def bind_agent(self, agent):
-		self.__agent = agent

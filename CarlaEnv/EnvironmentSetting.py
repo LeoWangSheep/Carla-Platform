@@ -10,11 +10,14 @@ class CarlaEnvironment(object):
 	_blueprint_library = None
 	_weather = None
 
-	def __init__(self, town_id = 3,  _host = 'localhost', _port = 2000, _expired_time = 90.0, weather = None):
+	def __init__(self, town_id = 3,  _host = 'localhost', _port = 2000, _expired_time = 10.0, weather = None):
 		CarlaEnvironment._client = carla.Client(_host, _port)
-		CarlaEnvironment._client.set_timeout(_expired_time)
-		town_str = 'Town0' + str(town_id)
-		CarlaEnvironment._world = CarlaEnvironment._client.get_world()
+		try:
+			CarlaEnvironment._client.set_timeout(_expired_time)
+			town_str = 'Town0' + str(town_id)
+			CarlaEnvironment._world = CarlaEnvironment._client.get_world()
+		except Exception as e:
+			raise Exception("Cannot connect the Carla Server, Please launch your CarlaUE4.exe/.sh.")
 		# self.__world = self.__client.load_world(town_str)
 		if weather != None:
 			CarlaEnvironment.set_weather(weather)
@@ -26,17 +29,8 @@ class CarlaEnvironment(object):
 		self.__actor_list = []
 		CarlaEnvironment.prepare_map()
 
-	def add_actor(self, _actor):
-		self.__actor_list.append(_actor)
-
 	def get_world(self):
 		return CarlaEnvironment._world
-
-	def clean_actors(self):
-		for actor in self.__actor_list:	
-			if actor is not None:
-				actor.destroy()
-		print("All clearned up!")
 
 	def spawn_stop_vehicle(self, x = 0.000000, y = 0.000000, z = 0.000000,\
 		pitch = 0.000000, yaw = 0.000000, roll = 0.000000):
@@ -45,6 +39,14 @@ class CarlaEnvironment(object):
 									  _pitch = pitch, _yaw = yaw, _roll = roll)
 		stop_vehicle.vehicle_initial()
 
+	def add_actor(self, _actor):
+		self.__actor_list.append(_actor)
+
+	def clean_actors(self):
+		for actor in self.__actor_list:
+			if actor is not None:
+				actor.destroy()
+		print("All clearned up!")
 	'''
 	mode:
 		0: from up to down
@@ -65,21 +67,6 @@ class CarlaEnvironment(object):
 			spectator.set_transform(carla.Transform(transform.location + offset, \
 			carla.Rotation(yaw = a_yaw)))
 
-	def set_traffic_light(self, vehicle, color):
-		if vehicle.is_at_traffic_light():
-			traffic_light = vehicle.get_traffic_light()
-			if color == 0:
-				traffic_light.set_state(carla.TrafficLightState.Red)
-			if color == 1:
-				traffic_light.set_state(carla.TrafficLightState.Yellow)
-			if color == 2:
-				traffic_light.set_state(carla.TrafficLightState.Green)
-
-	def set_town(self, town_id):
-		town_str = 'Town0' + str(town_id)
-		print(town_str)
-		CarlaEnvironment._client.load_world(town_str)
-
 	def spawn_new_actor(self, bp_str, location, rotation = None, stop = False):
 		t_transform = None
 		if rotation is None:
@@ -91,6 +78,12 @@ class CarlaEnvironment(object):
 		if spawn_rst is not None and stop:
 			spawn_rst.set_simulate_physics(False)
 		return spawn_rst
+
+
+	def set_town(self, town_id):
+		town_str = 'Town0' + str(town_id)
+		print(town_str)
+		CarlaEnvironment._client.load_world(town_str)
 
 	def spawn_dangerous_walker(self, location, rotation = None):
 		percentagePedestriansCrossing = 1
@@ -105,9 +98,6 @@ class CarlaEnvironment(object):
 			walker_controller_bp = CarlaEnvironment._blueprint_library.find('controller.ai.walker')
 			ai_controller = CarlaEnvironment._world.try_spawn_actor(walker_controller_bp, carla.Transform(), walker)
 			print(ai_controller)
-		# print(walker)
-		# print(location)
-		# print(rotation)
 		return walker, ai_controller
 
 	@staticmethod
@@ -144,15 +134,22 @@ class CarlaEnvironment(object):
 				raise KeyError(
 					"Traffic light '{}' already registered. Cannot register twice!".format(traffic_light.id))
 
+	def set_traffic_light(self, vehicle, color):
+		if vehicle.is_at_traffic_light():
+			traffic_light = vehicle.get_traffic_light()
+			if color == 0:
+				traffic_light.set_state(carla.TrafficLightState.Red)
+			if color == 1:
+				traffic_light.set_state(carla.TrafficLightState.Yellow)
+			if color == 2:
+				traffic_light.set_state(carla.TrafficLightState.Green)
+
 	@staticmethod
 	def get_next_traffic_light(actor):
 		"""
 		returns the next relevant traffic light for the provided actor
 		"""
-
 		location = actor.get_transform().location
-	
-
 		waypoint = CarlaEnvironment._map.get_waypoint(location)
 		# Create list of all waypoints until next intersection
 		list_of_waypoints = []
@@ -178,6 +175,7 @@ class CarlaEnvironment(object):
 					distance_to_relevant_traffic_light = distance
 
 		return relevant_traffic_light
+
 
 if __name__ == '__main__':
 	try:

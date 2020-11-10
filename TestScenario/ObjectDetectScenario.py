@@ -2,6 +2,7 @@ import time
 import random
 import operator
 from threading import Thread, Lock
+import traceback
 from TestScenario.BaseScenario import Scenario
 from Marking.MarkingScore import Marking
 from CarlaEnv.EnvironmentSetting import CarlaEnvironment
@@ -25,9 +26,9 @@ o_d_position = [ { 'location' : { 'x' : 165, 'y' : 196, 'z' : 3, 'pitch' : 0, 'y
 
 actor_blueprint_categories = {
 			'car': 'vehicle.tesla.model3',
-			 # 'van': 'vehicle.volkswagen.t2',
-			 # 'truck': 'vehicle.carlamotors.carlacola',
 			'bus': 'vehicle.volkswagen.t2',
+			# 'van': 'vehicle.volkswagen.t2',
+			# 'truck': 'vehicle.carlamotors.carlacola',
 			'motorbike': 'vehicle.kawasaki.ninja',
 			'bicycle': 'vehicle.diamondback.century',
 			'pedestrian': 'walker.pedestrian.0001'
@@ -83,6 +84,8 @@ class ObjectDetectScenario(Scenario):
 			sleep_thread.join()
 			detect_thread.join()
 			self.release_object()
+			if self.subthread_err_msg != "":
+				raise Exception(self.subthread_err_msg)
 
 	'''
 	call the agent detect function
@@ -93,14 +96,18 @@ class ObjectDetectScenario(Scenario):
 			return
 		input_data = self._sensor_list.get_data()
 		start_time = time.time()
-		detect_result = self._agent.detect(input_data)
-		if self.time_out:
-			print("Time ran out, detect failed")
-		end_time = time.time()
-		print("Detect Result: ", detect_result, ", Actual Result: ", self._correct_answer)
-		duration = end_time - start_time
-		self.marking_tool.detect_marking(detecteds=detect_result, targets=self._correct_answer, cost_time=duration)
-		print("Detect Time Cost: ", duration, "s")
+		try:
+			detect_result = self._agent.detect(input_data)
+			if self.time_out:
+				print("Time ran out, detect failed")
+			end_time = time.time()
+			print("Detect Result: ", detect_result, ", Actual Result: ", self._correct_answer)
+			duration = end_time - start_time
+			self.marking_tool.detect_marking(detecteds=detect_result, targets=self._correct_answer, cost_time=duration)
+			print("Detect Time Cost: ", duration, "s")
+		except Exception as e:
+			self._scenario_done = True
+			self.subthread_err_msg = "The detect function in the agent file is not exist!"
 		time.sleep(1)
 			
 

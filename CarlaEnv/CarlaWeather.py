@@ -54,7 +54,12 @@ class Weather:
 
 	@staticmethod
 	def clear_day():
-		pass
+		Weather.clouds = 0
+		Weather.wind = 0
+		Weather.rain = 0
+		Weather.wetness = 0
+		Weather.puddles = 0
+		Weather.fog = 0
 	
 	@staticmethod
 	def fog_day():
