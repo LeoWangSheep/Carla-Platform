@@ -63,7 +63,7 @@ class parentWindow(QMainWindow, Ui_MainWindow):
     def carlaRun(self):
 
         carla_path_name = self.settings.value("SETUP/userInterface/carla_path", 1, type=str)
-        print(carla_path_name)
+        # print(carla_path_name)
         if carla_path_name == "":
             self.warning_message("Sorry! Please configure the correct path of CarlaUE4.exe/.sh")
         else:
@@ -71,7 +71,7 @@ class parentWindow(QMainWindow, Ui_MainWindow):
                 self.slave = Slave()
                 self.slave.start(carla_path_name)
             except Exception as e:
-                print("excep")
+                self.warning_message("Sorry! Please configure the correct path of CarlaUE4.exe/.sh")
 
     def selectionTimer(self):
 
@@ -322,8 +322,9 @@ class HistoryRecordForm(Ui_historyRecord):
 
     def setRecordId(self, colunm):
         self.settings.setValue("SETUP/userInterface/cur_page", str(self.table.item(colunm, 5).text()))
-        traffic_light_scenario = "Traffic Light Detection"
+        traffic_light_scenario = "Traffic Light"
         object_detection = "Object Detection"
+        # print(self.table.item(colunm, 1).text())
         if colunm == 0:
             if self.table.item(colunm, 1).text() == traffic_light_scenario or self.table.item(colunm, 1).text() == object_detection:
                 self.signal_detecting0.emit()
