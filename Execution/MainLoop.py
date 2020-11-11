@@ -38,7 +38,7 @@ def main_loop(data_frame, err_queue):
 		weather_config = None
 		use_config = data_frame['if_custom']  # The switch for weather configuration
 		# print(use_config)
-		print(data_frame)
+		# print(data_frame)
 		if use_config:
 			weather_config = {}
 			weather_config['clouds'] = data_frame['custom_cloud']
@@ -92,10 +92,13 @@ def main_loop(data_frame, err_queue):
 		record_data['agent_name'] = data_frame['agent_name']
 
 		data_operation.insert(record_data)
+		err_queue.put(record_data)
 
 	except Exception as e:
 		err_queue.put("Runtime Error: " + str(e))
 		# raise Exception("Runtime Error: " + str(e))
+	else:
+		err_queue.put("")
 	finally:
 		try:
 			scenario.scenario_end()

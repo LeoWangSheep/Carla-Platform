@@ -94,6 +94,8 @@ class LeadingVehicleScenario(DrivingScenario):
         leading_driving_thread.join()
         ego_driving_thread.join()
         follow_thread.join()
+        if self.subthread_err_msg != "":
+            raise Exception(self.subthread_err_msg)
         time.sleep(2)
 
     def leading_driving(self, control):

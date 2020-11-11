@@ -51,6 +51,7 @@ class CarlaEnvironment(object):
 	mode:
 		0: from up to down
 		1: from back to front
+		2: from the vehicle to the front
 	'''
 	def follow_actor(self, actor, height = 50, a_yaw = 0, mode = 0):
 		spectator = CarlaEnvironment._world.get_spectator()
@@ -61,11 +62,16 @@ class CarlaEnvironment(object):
 		elif mode == 1:
 			offset = carla.Location()
 			if a_yaw == 180:
-				offset = carla.Location(x = 8, y = -3, z = 3)
+				offset = carla.Location(x=8, y=-3, z=3)
 			elif a_yaw == 0:
-				offset = carla.Location(x = -8, y = 3, z = 3)
+				offset = carla.Location(x=-8, y=3, z=3)
 			spectator.set_transform(carla.Transform(transform.location + offset, \
 			carla.Rotation(yaw = a_yaw)))
+		elif mode == 2:
+			offset = carla.Location(x=0, y=0, z=2)
+			spectator.set_transform(carla.Transform(transform.location + offset,
+													transform.rotation))
+
 
 	def spawn_new_actor(self, bp_str, location, rotation = None, stop = False):
 		t_transform = None

@@ -82,6 +82,8 @@ class BlindPointScenario(DrivingScenario):
         blind_point_thread.join()
         ego_driving_thread.join()
         follow_thread.join()
+        if self.subthread_err_msg != "":
+            raise Exception(self.subthread_err_msg)
         time.sleep(2)
 
     def blind_point_setting(self, control):

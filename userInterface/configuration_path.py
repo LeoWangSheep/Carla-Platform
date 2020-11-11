@@ -32,11 +32,16 @@ class Ui_PathConfi(object):
         self.agentPath.setStyleSheet("border-image:url(:/mainwindow/filepath.jpg)")
         self.agentPath.setText("")
         self.agentPath.setObjectName("agentPath")
-        
+
+        self.agentPath.hide()
+
         self.lineEdit_3 = QtWidgets.QLineEdit(Form)
         self.lineEdit_3.setGeometry(QtCore.QRect(230, 70, 381, 41))
         self.lineEdit_3.setFocusPolicy(QtCore.Qt.NoFocus)
         self.lineEdit_3.setObjectName("lineEdit_3")
+
+        self.lineEdit_3.hide()
+
 
         self.carlaPath = QtWidgets.QPushButton(Form)
         self.carlaPath.setGeometry(QtCore.QRect(180, 130, 41, 41))
@@ -94,9 +99,9 @@ class Ui_PathConfi(object):
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
+        Form.setWindowTitle(_translate("Form", "Configuration"))
         self.label_2.setText(_translate("Form", "Carla Path:"))
-        self.label.setText(_translate("Form", "Agent Path:"))
+        # self.label.setText(_translate("Form", "Agent Path:"))
         self.okPath.setText(_translate("Form", "OK"))
         self.canclepath.setText(_translate("Form", "Cancle"))
 import userInterface.background_rc

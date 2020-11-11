@@ -2,10 +2,6 @@ import mysql.connector
 import mysql
 import sys
 
-'''
-args = sys.argv
-print(args)
-'''
 
 def connect_database():
     global mydb
@@ -26,101 +22,6 @@ def connect_database():
 def disconnect_db():
     mycursor.close()
     mydb.close()
-
-blind_point_dataframe = {'clouds': 60,
-                         'rain': 0.0,
-                         'puddles': 0.0,
-                         'wind': 100,
-                         'fog': 0.0,
-                         'wetness': 0.0,
-                         'azimuth': 0.0,
-                         'altitude': 90,
-                         'time_stamp': 1603265236.0993092,
-                         'date_time': '2020-10-21 15:27:16',
-                         'mark': 70,
-                         'agent_path': 'D:/992_Project/Carla-Platform/DrivingAgent/CarlaAutoAgent.py',
-                         'agent_name': 'AutoAgent',
-                         'Scenario': 'Blind Point',
-                         'close_times': 6,
-                         'is_arrive': True,
-                         'collision_times': 1}
-
-leading_vehicle_dataframe = {'clouds': 60,
-                             'rain': 0.0,
-                             'puddles': 0.0,
-                             'wind': 100,
-                             'fog': 0.0,
-                             'wetness': 0.0,
-                             'azimuth': 0.0,
-                             'altitude': 90,
-                             'time_stamp':
-                                 1603265411.999487,
-                             'date_time': '2020-10-21 15:30:11',
-                             'mark': 60,
-                             'agent_path': 'D:/992_Project/Carla-Platform/DrivingAgent/CarlaAutoAgent.py',
-                             'agent_name': 'AutoAgent',
-                             'Scenario': 'Leading Vehicle',
-                             'close_times': 4,
-                             'is_arrive': True,
-                             'collision_times': 7}
-
-turning_dataframe = {'clouds': 60,
-                     'rain': 0.0,
-                     'puddles': 0.0,
-                     'wind': 100,
-                     'fog': 0.0,
-                     'wetness': 0.0,
-                     'azimuth': 0.0,
-                     'altitude': 90,
-                     'time_stamp': 1603265731.99693,
-                     'date_time': '2020-10-21 15:35:31',
-                     'mark': 80,
-                     'agent_path': 'D:/992_Project/Carla-Platform/DrivingAgent/CarlaAutoAgent.py',
-                     'agent_name': 'AutoAgent',
-                     'Scenario': 'Turning Obstacle',
-                     'close_times': 4,
-                     'is_arrive': True,
-                     'collision_times': 1}
-
-object_dataframe = {'clouds': 0.0,
-                    'rain': 0.0,
-                    'puddles': 0.0,
-                    'wind': 0.0,
-                    'fog': 0.0,
-                    'wetness': 0.0,
-                    'azimuth': 0.0,
-                    'altitude': 90,
-                    'time_stamp': 1602665220.8308778,
-                    'date_time': '2020-10-14 16:47:00',
-                    'agent_path': 'D:/992_Project/Carla-Platform/DrivingAgent/DetectAgent_1.py',
-                    'agent_name': 'DetectAgent',
-                    'Location': None,
-                    'mark': 19.44,
-                    'Scenario': 'Object Detection',
-                    'accuracy': 27.78,
-                    'avg_time': 2.61,
-                    'detects': 'bus;pedestrian;|bus;|car;car;pedestrian;|car;car;motorbike;|pedestrian;car;pedestrian;|pedestrian;pedestrian;pedestrian;|',
-                    'answers': 'pedestrian;bus;pedestrian;|bus;pedestrian;pedestrian;|car;bus;bicycle;|bus;car;bicycle;|bicycle;car;bicycle;|pedestrian;bicycle;motorbike;|', }
-
-traffic_dataframe = {'clouds': 0.0,
-                     'rain': 0.0,
-                     'puddles': 0.0,
-                     'wind': 0.0,
-                     'fog': 0.0,
-                     'wetness': 0.0,
-                     'azimuth': 0.0,
-                     'altitude': 90,
-                     'time_stamp': 1602665556.0630894,
-                     'date_time': '2020-10-14 16:52:36',
-                     'agent_path': 'D:/992_Project/Carla-Platform/DrivingAgent/DetectAgent_1.py',
-                     'agent_name': 'DetectAgent',
-                     'mark': 70.0,
-                     'Location': None,
-                     'Scenario': 'Traffic Light Detection',
-                     'accuracy': 100.0,
-                     'avg_time': 2.77,
-                     'detects': 'Red;|Red;|Red;|Yellow;|Yellow;|Yellow;|Green;|Green;|Green;|Green;|',
-                     'answers': 'Red;|Red;|Red;|Yellow;|Yellow;|Yellow;|Green;|Green;|Green;|Green;|', }
 
 
 def insert_weather(data_frame):
@@ -236,6 +137,16 @@ def get_record_list(page_num, load_num):
     return result
 
 
+def get_total_page(load_num):
+    connect_database()
+    sql = "select count(*) from testing_record"
+    mycursor.execute(sql)
+    total_count = mycursor.fetchall()
+    total_page = (total_count[0][0] + load_num - 1) / load_num
+    disconnect_db()
+    return int(total_page)
+
+
 def get_detailed_list(record_id):
     connect_database()
     sql = f"SELECT testing_scenario.name FROM testing_record " \
@@ -270,7 +181,7 @@ def insert(data_frame):
 
 if __name__ == '__main__':
     connect_database()
-    insert(object_dataframe)
+    # insert(object_dataframe)
     # get_record_list(int(args[1]), int(args[2]))
     # get_detailed_list(int(args[3]))
     mycursor.close()

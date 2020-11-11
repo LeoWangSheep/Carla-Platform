@@ -13,6 +13,7 @@ class DrivingScenario(Scenario):
 		self._level_done = False
 		self.dest_arrive = False
 
+
 	def set_up_scenario_start(self, agent, position):
 		super().set_up_scenario_start(agent, position)
 		self._sensor_list.append_collision(self._physical_vehicle)
@@ -24,7 +25,7 @@ class DrivingScenario(Scenario):
 				break
 			if self._level_done:
 				break
-			Scenario._carla_env.follow_actor(self._physical_vehicle, 50, a_yaw = ego_yaw)
+			Scenario._carla_env.follow_actor(self._physical_vehicle, 50, a_yaw = ego_yaw, mode=2)
 
 	def ego_driving(self, destination):
 		self._agent.set_destination((destination['x'],
@@ -37,14 +38,18 @@ class DrivingScenario(Scenario):
 			input_data = self._sensor_list.get_data()
 			try:
 				control = self._agent.run_step(input_data)
+				self._physical_vehicle.apply_control(control)
 			except Exception as e:
 				self._scenario_done = True
-				raise Exception("The Agent's run_step function has problem! Please have a check.")
-			self._physical_vehicle.apply_control(control)
-			if self._agent.done():
-				self.dest_arrive = True
-				self._physical_vehicle.apply_control(carla.VehicleControl(throttle=0.0, steer=0.0, brake = 1.0))
-				break
+				self.subthread_err_msg = "The Agent's run_step function has problem! Please have a check."
+			try:
+				if self._agent.done():
+					self.dest_arrive = True
+					self._physical_vehicle.apply_control(carla.VehicleControl(throttle=0.0, steer=0.0, brake = 1.0))
+					break
+			except Exception as e:
+				self._scenario_done = True
+				self.subthread_err_msg = "The Agent's done function has problem! Please have a check."
 		self._level_done = True
 
 	def get_distance(self, ego_v, enemy_e):

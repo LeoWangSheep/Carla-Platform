@@ -17,6 +17,7 @@ import time
 class Ui_historyRecord(QWidget):
     control_signal = pyqtSignal(list)
 
+    data_load_num = 10
     '''
     def __init__(self, *args, **kwargs):
          super(Ui_historyRecord, self).__init__(*args, **kwargs)
@@ -68,7 +69,7 @@ class Ui_historyRecord(QWidget):
         self.setPalette(palette)
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)  # 自适应宽度
         # self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)  # 自适应宽度
-        self.table.setHorizontalHeaderLabels(['date','scenario','agent name','score','see details','id'])
+        self.table.setHorizontalHeaderLabels(['date', 'scenario', 'agent name', 'score', 'see details', 'id'])
         font = QtGui.QFont()
         font.setFamily("华文隶书")
         font.setPointSize(10)
@@ -77,7 +78,8 @@ class Ui_historyRecord(QWidget):
         self.__layout.addWidget(self.table)
         self.setLayout(self.__layout)
         self.setStyleSheet(style_sheet)
-        self.setPageController(int(len((data))/10+1))  # 表格设置页码控制
+        # self.setPageController(int(len((data))/10+1))  # 表格设置页码控制
+        self.setPageController(self.get_total_page())  # setting the total page number
         self.control_signal.connect(self.page_controller)
         self.control_signal.connect(self.page_controller)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -97,11 +99,13 @@ class Ui_historyRecord(QWidget):
 
             # self.queryButton[dataId].clicked.connect(reprotDetail.show)
 
+    def get_total_page(self):
+        page_total = data_operation.get_total_page(10)
+        return page_total
 
     def getCurpage(self):
         # print(self.curPage.text())
         return int(self.curPage.text())
-
 
     def page_controller(self, signal):
         total_page = self.showTotalPage()
@@ -130,6 +134,7 @@ class Ui_historyRecord(QWidget):
     def changeTableContent(self):
         """根据当前页改变表格的内容"""
         cur_page = self.curPage.text()
+        # print(int(cur_page))
         data_list = data_operation.get_record_list(int(cur_page), 10)
         data = self.convert_data_to_dict(data_list)
         # print(data)
@@ -137,8 +142,6 @@ class Ui_historyRecord(QWidget):
         # self.settings = QSettings("user_interface.ini", QSettings.IniFormat)
         # self.settings.setIniCodec("UTF-8")
         # self.settings.setValue("SETUP/cur_page", str(cur_page))
-
-
         # self.table = QTableWidget(len(data), 4)
 
         # a=QTableWidgetItem(data[2]['date'])

@@ -214,7 +214,9 @@ class Ui_Details_Driving(object):
 
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
+        Form.setWindowTitle(_translate("Form", "Driving Detail Report"))
+        Form.setMinimumSize(930, 684)
+        Form.setMaximumSize(930, 684)
         __sortingEnabled = self.information.isSortingEnabled()
         self.information.setSortingEnabled(False)
         item = self.information.item(0, 0)

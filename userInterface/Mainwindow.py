@@ -304,6 +304,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+
         self.PathSetting.setText(_translate("MainWindow", "Path Setting"))
         self.HistoryTestRecord.setText(_translate("MainWindow", "History Test Record"))
         self.CarlaRun.setText(_translate("MainWindow", "Carla Run"))

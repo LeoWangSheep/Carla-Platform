@@ -90,6 +90,8 @@ class TurningObstacleScenario(DrivingScenario):
         enemy_vehicle_thread.join()
         follow_thread.join()
         turning_driving_thread.join()
+        if self.subthread_err_msg != "":
+            raise Exception(self.subthread_err_msg)
 
     def enemy_vehicle_operation(self):
         if self._enemy_vehicle is None:
@@ -106,7 +108,9 @@ class TurningObstacleScenario(DrivingScenario):
                 # print("distance: ", distance)
                 if distance < 10:
                     time.sleep(10)
-                    for i in range(20):
+                    for i in range(10):
+                        if self._level_done:
+                            break
                         self._enemy_vehicle.apply_control(carla.VehicleControl(throttle=1, steer=0.0))
                         time.sleep(1)
                     break
@@ -115,7 +119,9 @@ class TurningObstacleScenario(DrivingScenario):
                 rush_time = random.randint(17, 20)
                 if distance < rush_time:
                     # print(distance , " : ", rush_time)
-                    for i in range(20):
+                    for i in range(10):
+                        if self._level_done:
+                            break
                         self._enemy_vehicle.apply_control(carla.VehicleControl(throttle=1, steer=0.0))
                         time.sleep(1)
                     break

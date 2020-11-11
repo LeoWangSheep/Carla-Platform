@@ -108,20 +108,16 @@ class parentWindow(QMainWindow, Ui_MainWindow):
         self.main_ui.Weather_CB.setHidden(False)
         self.main_ui.Customize.setHidden(True)
 
-
     def selectionWeather_CB(self):
         Weather_CB_currentvalue = self.main_ui.Weather_CB.currentText()
         self.settings.setValue("SETUP/userInterface/Weather_CB", Weather_CB_currentvalue)
-
 
     def selectionScenario_CB(self):
         selectionScenario_CB_currentvalue = self.main_ui.ScenearioSelection.currentText()
         self.settings.setValue("SETUP/userInterface/scenario", selectionScenario_CB_currentvalue)
 
-
     def judgement_CustoizeWAndT(self):
         self.settings.setValue("SETUP/userInterface/customize", "true")
-
 
     def customize_hidden(self):
         self.main_ui.label_4.setVisible(False)
@@ -181,19 +177,32 @@ class parentWindow(QMainWindow, Ui_MainWindow):
                 err_msg_queue=multiprocessing.Queue()
                 main_process = multiprocessing.Process(target=MainLoop.main_loop,
                                                        kwargs={'data_frame':message, 'err_queue': err_msg_queue})
+                self.hide()
                 main_process.start()
                 # MainLoop.main_loop(message)
                 QApplication.processEvents()  # 刷新界面
                 time.sleep(0.2)
                 # main_thread.join()
                 main_process.join()
+                self.show()
                 result = err_msg_queue.get()
-                print(result)
+
+                if type(result) is dict:
+                    result_report = "Test Done! Your Result is:\n"
+                    result_report += 'Test Scenario: ' + str(result['Scenario']) + '\n'
+                    result_report += 'Agent Name: ' + str(result['agent_name']) + '\n'
+                    result_report += 'Mark: ' + str(result['mark']) + '\n'
+                    result_report += "For more details you can see the detail report in the history list\n"
+                    QMessageBox.information(self,
+                                            "Test Result",
+                                            result_report)
+                elif type(result) is str:
+                    self.warning_message(str(result))
+
             except Exception as err:
                 self.warning_message(str(err))
         else:
             self.warning_message("Sorry! Execution Failed! You should configure" + exception_str)
-
 
     def warning_message(self, err_str):
         QMessageBox.warning(self, "Execution Error!", err_str)
@@ -308,78 +317,72 @@ class HistoryRecordForm(Ui_historyRecord):
     def __init__(self, *args, **kwargs):
         super(HistoryRecordForm, self).__init__(*args, **kwargs)
         self.setupUi()
-
-    def setRecordId(self, colunm):
         self.settings = QSettings("userInterface/user_interface.ini", QSettings.IniFormat)
         self.settings.setIniCodec("UTF-8")
+
+    def setRecordId(self, colunm):
+        self.settings.setValue("SETUP/userInterface/cur_page", str(self.table.item(colunm, 5).text()))
+        traffic_light_scenario = "Traffic Light Detection"
+        object_detection = "Object Detection"
         if colunm == 0:
-            if self.table.item(colunm, 1).text() == 'Traffic Light Detection Scenario' or self.table.item(colunm,
-                                                                                                          1).text() == 'Object Detection Scenario':
+            if self.table.item(colunm, 1).text() == traffic_light_scenario or self.table.item(colunm, 1).text() == object_detection:
                 self.signal_detecting0.emit()
             else:
                 self.signal_driving0.emit()
         if colunm == 1:
-            if self.table.item(colunm, 1).text() == 'Traffic Light Detection Scenario' or self.table.item(colunm,
-                                                                                                          1).text() == 'Object Detection Scenario':
+            if self.table.item(colunm, 1).text() == traffic_light_scenario or self.table.item(colunm, 1).text() == object_detection:
                 self.signal_detecting1.emit()
             else:
                 self.signal_driving1.emit()
         if colunm == 2:
-            if self.table.item(colunm, 1).text() == 'Traffic Light Detection Scenario' or self.table.item(colunm,
-                                                                                                          1).text() == 'Object Detection Scenario':
+            if self.table.item(colunm, 1).text() == traffic_light_scenario or self.table.item(colunm, 1).text() == object_detection:
                 self.signal_detecting2.emit()
             else:
                 self.signal_driving2.emit()
         if colunm == 3:
-            if self.table.item(colunm, 1).text() == 'Traffic Light Detection Scenario' or self.table.item(colunm,
-                                                                                                          1).text() == 'Object Detection Scenario':
+            if self.table.item(colunm, 1).text() == traffic_light_scenario or self.table.item(colunm, 1).text() == object_detection:
                 self.signal_detecting3.emit()
             else:
                 self.signal_driving3.emit()
         if colunm == 4:
-            if self.table.item(colunm, 1).text() == 'Traffic Light Detection Scenario' or self.table.item(colunm,
-                                                                                                          1).text() == 'Object Detection Scenario':
+            if self.table.item(colunm, 1).text() == traffic_light_scenario or self.table.item(colunm, 1).text() == object_detection:
                 self.signal_detecting4.emit()
             else:
                 self.signal_driving4.emit()
         if colunm == 5:
-            if self.table.item(colunm, 1).text() == 'Traffic Light Detection Scenario' or self.table.item(colunm,
-                                                                                                          1).text() == 'Object Detection Scenario':
+            if self.table.item(colunm, 1).text() == traffic_light_scenario or self.table.item(colunm, 1).text() == object_detection:
                 self.signal_detecting5.emit()
             else:
                 self.signal_driving5.emit()
         if colunm == 6:
-            if self.table.item(colunm, 1).text() == 'Traffic Light Detection Scenario' or self.table.item(colunm,
-                                                                                                          1).text() == 'Object Detection Scenario':
+            if self.table.item(colunm, 1).text() == traffic_light_scenario or self.table.item(colunm, 1).text() == object_detection:
                 self.signal_detecting6.emit()
             else:
                 self.signal_driving6.emit()
         if colunm == 7:
-            if self.table.item(colunm, 1).text() == 'Traffic Light Detection Scenario' or self.table.item(colunm,
-                                                                                                          1).text() == 'Object Detection Scenario':
+            if self.table.item(colunm, 1).text() == traffic_light_scenario or self.table.item(colunm, 1).text() == object_detection:
                 self.signal_detecting7.emit()
             else:
                 self.signal_driving7.emit()
         if colunm == 8:
-            if self.table.item(colunm, 1).text() == 'Traffic Light Detection Scenario' or self.table.item(colunm,
-                                                                                                          1).text() == 'Object Detection Scenario':
+            if self.table.item(colunm, 1).text() == traffic_light_scenario or self.table.item(colunm, 1).text() == object_detection:
                 self.signal_detecting8.emit()
             else:
                 self.signal_driving8.emit()
         if colunm == 9:
-            if self.table.item(colunm, 1).text() == 'Traffic Light Detection Scenario' or self.table.item(colunm,
-                                                                                                          1).text() == 'Object Detection Scenario':
+            if self.table.item(colunm, 1).text() == traffic_light_scenario or self.table.item(colunm, 1).text() == object_detection:
                 self.signal_detecting9.emit()
             else:
                 self.signal_driving9.emit()
-        # QApplication.processEvent()
-        # time.sleep(0.2)
+
         '''
         print(colunm)
         print("selftable", self.table)
         print(self.table.item(colunm, 5).text())
         '''
-        self.settings.setValue("SETUP/userInterface/cur_page", str(self.table.item(colunm, 5).text()))
+
+
+
     # def show(self):
     #     details_button = self.queryButton[2]
     #     details_button_1 = self.queryButton[3]
@@ -415,11 +418,15 @@ class reportDetail_driving(QWidget, Ui_Details_Driving):
     def __init__(self, parent=None):
         super(reportDetail_driving, self).__init__(parent)
         self.setupUi(self)
-
-    def setData(self):
         self.settings = QSettings("userInterface/user_interface.ini", QSettings.IniFormat)
         self.settings.setIniCodec("UTF-8")
+
+    def setData(self):
+        # self.settings = QSettings("userInterface/user_interface.ini", QSettings.IniFormat)
+        # self.settings.setIniCodec("UTF-8")
+
         record_id = self.settings.value("SETUP/userInterface/cur_page", 13, type=str)
+
         self.information.setItem(0, 5, QTableWidgetItem(str(5)))
 
         record_list = data_operation.get_detailed_list(int(record_id))
@@ -461,6 +468,63 @@ class reportDetail_detecting(QWidget, Ui_detailReport_detect):
         self.settings.setIniCodec("UTF-8")
         cur_page = self.settings.value("SETUP/userInterface/cur_page", 13, type=str)
 
+        record_list = data_operation.get_detailed_list(int(cur_page))
+        this_record = record_list[0]
+
+        self.weather.setItem(1, 0, QTableWidgetItem(str(this_record[9])))
+        self.weather.setItem(1, 1, QTableWidgetItem(str(this_record[10])))
+        self.weather.setItem(1, 2, QTableWidgetItem(str(int(this_record[11]))))
+        self.weather.setItem(1, 3, QTableWidgetItem(str(this_record[12])))
+        self.weather.setItem(1, 4, QTableWidgetItem(str(this_record[13])))
+        self.weather.setItem(1, 5, QTableWidgetItem(str(this_record[14])))
+        self.weather.setItem(1, 6, QTableWidgetItem(str(this_record[15])))
+        self.weather.setItem(1, 7, QTableWidgetItem(str(this_record[16])))
+
+        # set test time
+        self.information_3.setItem(0, 0, QTableWidgetItem(str(this_record[7])))
+
+        # set scenario name
+        self.information_3.setItem(0, 1, QTableWidgetItem(str(this_record[18])))
+
+        #set mark
+        self.information_2.setItem(0, 1, QTableWidgetItem(str(this_record[3])))
+
+        # agent information
+        self.information.setItem(0, 1, QTableWidgetItem(str(this_record[4])))
+        self.information.setItem(3, 1, QTableWidgetItem(str(this_record[5])))
+
+        # accuracy
+        self.information.setItem(1, 1, QTableWidgetItem(str(this_record[21]) + '%'))
+
+        # avg time
+        self.information.setItem(2, 1, QTableWidgetItem(str(this_record[22]) + 's'))
+
+        # detects and answer setting
+        detects_str = str(this_record[23])
+        answer_str = str(this_record[24])
+
+        detects_arr = detects_str.split(sep="|")
+        answer_arr = answer_str.split(sep="|")
+
+        attr_length = len(detects_arr)
+
+        self.details.setColumnCount(attr_length + 1)
+        for i in range(0, attr_length + 1):
+            self.details.setItem(0, i, QtWidgets.QTableWidgetItem())
+
+        _translate = QtCore.QCoreApplication.translate
+
+        item = self.details.item(0, 0)
+        item.setText(_translate("Form", "Detects"))
+        item = self.details.item(1, 0)
+        item.setText(_translate("Form", "Answers"))
+        for i in range(0, attr_length):
+            item = self.details.item(0, i + 1)
+            item.setText(_translate("Form", detects_arr[i]))
+            item = self.details.item(1, i + 1)
+            item.setText(_translate("Form", answer_arr[i]))
+
+
 
 if __name__ == '__main__':
     try:
@@ -488,8 +552,11 @@ if __name__ == '__main__':
         back_Customize_button.clicked.connect(childWandT.close)
 
         historyrecord_button = window.main_ui.HistoryTestRecord
+        historyrecord_button.clicked.connect(childHistoryRecord.changeTableContent)
         historyrecord_button.clicked.connect(childHistoryRecord.show)
         # historyrecord_button.clicked.connect(lambda:HistoryRecordForm().setCurpage(0))
+
+
         reprotDetail_driving = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         reprotDetail_detecting = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         # historyrecord_button.clicked.connect(lambda:HistoryRecordForm().setCurpage(0))
