@@ -28,18 +28,18 @@ set environment variable (PYTHONPATH) PYTHONPATH = \your-carla-path\PythonAPI\ca
 configure all the necessary library or setting. The mysql database is necessary for storing the test result.
 
 ### STEP 5 
-Inherit the Agent class (In DrivingAgent/Agent.py) and rewrite the necessary function
-5.1 __init__() : Constructor, initialize your necessary members.
-5.2 initial_sensor() : declare the sensor you need to install on your vehicle. we provide RGB camera, GNSS sensor.
-The direction and position of the sensors can also be specified.
-For Driving Scenario:
+Inherit the Agent class (In DrivingAgent/Agent.py) and rewrite the necessary function  
+5.1 __init__() : Constructor, initialize your necessary members.  
+5.2 initial_sensor() : declare the sensor you need to install on your vehicle. we provide RGB camera, GNSS sensor.  
+The direction and position of the sensors can also be specified.  
+For Driving Scenario:  
 5.3 set_destination() : this function will provide a waypoint in the Carla world and its GPS position. Users can
-use this information to set a goal.
+use this information to set a goal.  
 5.4 run_step() : this function will provide all the information obtained from the sensors. Users can use these
-information to let the vehicle make some driving decision.
-5.5 done() : should return true if the vehicle arrive to the destination or complete the given mission.
-For Detect Scenario:
-5.6 detect() : should return a list contain all the necessary things in the detection task.
+information to let the vehicle make some driving decision.  
+5.5 done() : should return true if the vehicle arrive to the destination or complete the given mission.  
+For Detect Scenario:  
+5.6 detect() : should return a list contain all the necessary things in the detection task.  
 
 ### STEP 6 
 run CarlaUE4.exe (Windows) / CarlaUE4.sh (Linux) (KEEP RUNNING) 
