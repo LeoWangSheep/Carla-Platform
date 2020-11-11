@@ -134,7 +134,6 @@ class parentWindow(QMainWindow, Ui_MainWindow):
     def runProgram(self):
         # self.slave.start(pyfile path input)
 
-
         # agent_path_name = self.settings.value("SETUP/userInterface/agent_path", 0, type=str)
         # carla_path_name = self.settings.value("SETUP/carla_path", 1, type=str)
         customize_record = self.settings.value("SETUP/userInterface/customize", 2, type=str)
@@ -239,6 +238,7 @@ class childWindow_WT(QDialog):
         self.child.wind_power.valueChanged.connect(self.changedValue)
         self.child.fog.valueChanged.connect(self.changedValue)
         self.child.air_humidity.valueChanged.connect(self.changedValue)
+        self.child.cloundiness.valueChanged.connect(self.changedValue)
 
     def readWeatherandTimer(self):
         timedial_record = self.settings.value("SETUP/userInterface/timeDial", 5, type=str)
@@ -264,7 +264,7 @@ class childWindow_WT(QDialog):
         self.settings.setValue("SETUP/userInterface/fog", self.child.fog.value())
         self.settings.setValue("SETUP/userInterface/wind_power", self.child.wind_power.value())
         self.settings.setValue("SETUP/userInterface/air_humidity", self.child.air_humidity.value())
-        self.settings.setValue("SETUP/userInterface/cloudiness", self.child.air_humidity.value())
+        self.settings.setValue("SETUP/userInterface/cloudiness", self.child.cloundiness.value())
 
 
 class PathConfiForm(QWidget, Ui_PathConfi):
