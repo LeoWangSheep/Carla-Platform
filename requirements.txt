@@ -3,3 +3,5 @@ opencv-python==4.2.0.34
 pygame==1.9.6
 networkx
 mysql-connector-python
+pyqt5 
+pyqt5-tools
