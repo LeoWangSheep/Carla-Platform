@@ -2,14 +2,19 @@ import mysql.connector
 import mysql
 import sys
 
+host_name = 'localhost'
+user_name = 'root'
+password = 'root'
+database_name = '992_database'
+
 
 def connect_database():
     global mydb
     try:
-        mydb = mysql.connector.connect(host="localhost",
-                                       user="root",
-                                       passwd="root",
-                                       database="992_database")
+        mydb = mysql.connector.connect(host=host_name,
+                                       user=user_name,
+                                       passwd=password,
+                                       database=database_name)
     except Exception as e:
         raise Exception("The database connection is not succeed, please have a check!")
 

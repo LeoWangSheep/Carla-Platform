@@ -26,6 +26,9 @@ set environment variable (PYTHONPATH) PYTHONPATH = \your-carla-path\PythonAPI\ca
 
 ### STEP 4 
 configure all the necessary library or setting. The mysql database is necessary for storing the test result.
+To connect your local database, you should configure the database name, host, username and password in the
+beginning of the DataOperation/data_operation.py. For creating the necessary data table, the create_table.sql should
+be execute in your database. 
 
 ### STEP 5 
 Inherit the Agent class (In DrivingAgent/Agent.py) and rewrite the necessary function  
